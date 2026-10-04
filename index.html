@@ -34,6 +34,7 @@
       background: var(--bg);
       color: var(--ink);
       line-height: 1.55;
+      font-size: calc(16px * var(--fs, 1));
     }
 
     button, input, select { font: inherit; }
@@ -73,7 +74,7 @@
     }
     h1 {
       margin: 0;
-      font-size: 18px;
+      font-size: calc(18px * var(--fs, 1));
       line-height: 1.25;
       letter-spacing: 0;
     }
@@ -83,7 +84,7 @@
       background: #e8f4f2;
       color: #07534f;
       padding: 6px 10px;
-      font-size: 13px;
+      font-size: calc(13px * var(--fs, 1));
       font-weight: 800;
     }
     .progress {
@@ -133,12 +134,12 @@
       gap: 8px;
       flex-wrap: wrap;
       color: var(--muted);
-      font-size: 13px;
+      font-size: calc(13px * var(--fs, 1));
       font-weight: 700;
       margin-bottom: 12px;
     }
     .question {
-      font-size: 18px;
+      font-size: calc(18px * var(--fs, 1));
       white-space: pre-wrap;
       overflow-wrap: anywhere;
     }
@@ -171,7 +172,7 @@
       padding: 0 12px;
       background: #fff;
       color: var(--ink);
-      font-size: 18px;
+      font-size: calc(18px * var(--fs, 1));
     }
     .answer-row.correct input { border-color: rgba(31, 122, 77, .7); background: #f0faf5; }
     .answer-row.wrong input { border-color: rgba(179, 38, 30, .7); background: #fff4f3; }
@@ -214,8 +215,8 @@
       padding: 10px;
       background: #fff;
     }
-    .stat b { display: block; font-size: 22px; line-height: 1.2; }
-    .stat span { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .stat b { display: block; font-size: calc(22px * var(--fs, 1)); line-height: 1.2; }
+    .stat span { color: var(--muted); font-size: calc(12px * var(--fs, 1)); font-weight: 700; }
     .locked {
       min-height: 100dvh;
       display: grid;
@@ -234,9 +235,30 @@
       padding: 0 12px;
       margin: 12px 0;
     }
+    input { font-size: max(16px, calc(17px * var(--fs, 1))) !important; }
+    .font-btn {
+      min-height: 32px;
+      padding: 4px 10px;
+      font-size: 13px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid var(--line);
+      white-space: nowrap;
+    }
+    .title-tools { display: flex; gap: 6px; align-items: center; }
+    .blank {
+      display: inline-block;
+      margin: 0 2px;
+      padding: 0 6px;
+      border-radius: 6px;
+      background: #fff3d6;
+      color: var(--accent);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .blank b { display: inline-block; min-width: 2.2em; text-align: center; border-bottom: 2px solid var(--accent); }
     .hidden { display: none !important; }
     @media (max-width: 430px) {
-      .toolbar { grid-template-columns: 1fr; }
       .actions { grid-template-columns: 1fr 1fr; }
       .actions .primary { grid-column: span 2; }
       .summary { grid-template-columns: 1fr; }
@@ -257,7 +279,10 @@
     <header>
       <div class="title-row">
         <h1>營造安衛填充測驗</h1>
-        <div id="scorePill" class="status-pill">0 / 0</div>
+        <div class="title-tools">
+          <button id="fontBtn" class="font-btn" type="button">字級：中</button>
+          <div id="scorePill" class="status-pill">0 / 0</div>
+        </div>
       </div>
       <div class="progress"><div id="progressBar"></div></div>
     </header>
@@ -322,6 +347,13 @@
         });
       });
     })();
+
+    // 把題目裡的 ( ) 換成醒目的編號空格（　１　），對應下方答案欄
+    function formatBlanks(text) {
+      const esc = String(text).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      let n = 0;
+      return esc.replace(/[（(]\s*[)）]/g, () => `<span class="blank">（<b>${++n}</b>）</span>`);
+    }
 
     function todayIso() {
       const now = new Date();
@@ -444,7 +476,7 @@
       document.getElementById("counter").textContent = `第 ${current + 1} / ${activeIds.length} 題`;
       document.getElementById("slotCount").textContent = `${q.answers.length} 個填空`;
       document.getElementById("sourceRow").textContent = `原 Excel 第 ${q.sourceRow} 列`;
-      document.getElementById("question").textContent = q.question;
+      document.getElementById("question").innerHTML = formatBlanks(q.question);
       const saved = state.answers[q.id] || [];
       const result = state.results[q.id];
       const answers = document.getElementById("answers");
@@ -554,6 +586,26 @@
       rebuildActiveIds();
       render();
     }
+
+    // 字級切換：小 / 中 / 大，記住使用者選擇
+    (function fontSize() {
+      const LEVELS = [{ name: "小", v: 0.85 }, { name: "中", v: 1 }, { name: "大", v: 1.15 }];
+      const KEY = "construction-fill-exam-font";
+      let idx;
+      try { idx = parseInt(localStorage.getItem(KEY), 10); } catch {}
+      if (!(idx >= 0 && idx < LEVELS.length)) idx = window.innerWidth <= 430 ? 0 : 1;
+      const btn = document.getElementById("fontBtn");
+      function apply() {
+        document.documentElement.style.setProperty("--fs", LEVELS[idx].v);
+        btn.textContent = "字級：" + LEVELS[idx].name;
+      }
+      btn.addEventListener("click", () => {
+        idx = (idx + 1) % LEVELS.length;
+        try { localStorage.setItem(KEY, idx); } catch {}
+        apply();
+      });
+      apply();
+    })();
 
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("./service-worker.js").catch(() => {});

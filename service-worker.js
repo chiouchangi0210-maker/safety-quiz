@@ -1,5 +1,5 @@
 // 修改題目或程式後，把版本號 +1，使用者下次開啟就會更新
-const CACHE = "fill-exam-v1";
+const CACHE = "fill-exam-v3";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg",
                "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
