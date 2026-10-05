@@ -43,8 +43,8 @@ button{cursor:pointer}
 .mast-in{max-width:860px;margin:0 auto}
 .mast h1{margin:0;font-size:calc(17px*var(--fs));font-weight:700;letter-spacing:.02em;display:flex;justify-content:space-between;align-items:center;gap:8px}
 .font-btn{background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:6px;padding:2px 10px;font-size:13px;font-weight:500}
-.stages{display:grid;grid-template-columns:repeat(4,1fr);margin-top:10px}
-.stage{background:none;border:0;color:rgba(255,255,255,.62);padding:8px 2px 10px;font-weight:500;font-size:calc(14px*var(--fs));border-bottom:4px solid transparent;position:relative}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);margin-top:10px}
+.stage{background:none;border:0;color:rgba(255,255,255,.62);padding:8px 0 10px;font-weight:500;font-size:calc(13.5px*var(--fs));white-space:nowrap;border-bottom:4px solid transparent;position:relative}
 .stage[aria-selected="true"]{color:#fff;border-bottom-color:var(--flag);font-weight:700}
 .stage .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--flag);margin-left:4px;vertical-align:middle;opacity:0}
 .stage.done .dot{opacity:1}
@@ -120,6 +120,28 @@ ol.items{list-style:none;margin:0;padding:0}
 
 
 
+/* photos */
+.photo-head{padding:16px 16px 12px;border-bottom:2px solid var(--ink)}
+.photo-head h2{margin:0 0 4px;font-size:calc(20px*var(--fs));font-weight:900;letter-spacing:.04em}
+.photo-head p{margin:0 0 12px;color:var(--muted);font-size:calc(13px*var(--fs))}
+.shoot{display:grid;grid-template-columns:1.4fr 1fr;gap:8px}
+.shoot label{display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px;border-radius:4px;font-weight:700;cursor:pointer;border:1.5px solid var(--steel-2)}
+.shoot label.cam{background:var(--steel-2);color:var(--sheet)}
+.shoot label.lib{color:var(--steel-2)}
+.shoot input{position:absolute;width:1px;height:1px;opacity:0}
+.photos{list-style:none;margin:0;padding:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.ph-card{border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--sheet);display:flex;flex-direction:column}
+.ph-card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--na-bg);cursor:zoom-in}
+.ph-meta{padding:6px 8px 8px;display:grid;gap:5px}
+.ph-meta select,.ph-meta input{width:100%;border:1px solid var(--line);border-radius:3px;background:transparent;padding:4px 6px;font-size:max(16px,calc(13px*var(--fs)))}
+.ph-foot{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+.empty{padding:36px 16px;text-align:center;color:var(--muted)}
+.viewer{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:20;display:none;place-items:center;padding:12px}
+.viewer.open{display:grid}
+.viewer img{max-width:100%;max-height:100%;object-fit:contain}
+.busy{padding:10px 16px;color:var(--muted);font-size:13px;display:none}
+.busy.on{display:block}
+
 /* print = the paper form */
 .print-only{display:none}
 @media print{
@@ -138,6 +160,10 @@ ol.items{list-style:none;margin:0;padding:0}
   .ph p{margin:2px 0}
   .pfoot{margin-top:8px}
   .pfoot p{margin:3px 0}
+  .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8mm}
+  .pgrid figure{margin:0;break-inside:avoid;border:1px solid #000;padding:3mm}
+  .pgrid img{width:100%;height:62mm;object-fit:contain;display:block}
+  .pgrid figcaption{font-size:10pt;margin-top:2mm}
 }
 </style>
 </head>
@@ -152,7 +178,7 @@ ol.items{list-style:none;margin:0;padding:0}
 <main>
   <section class="sheet" id="sheet">
     <div class="stamp" aria-hidden="true"><div>資料<br>齊備<small id="stampDate"></small></div></div>
-    <div class="screen-only">
+    <div class="screen-only" id="checkView">
       <div class="sheet-head">
         <h2 id="title"></h2>
         <div class="equip" id="equip"></div>
@@ -173,6 +199,18 @@ ol.items{list-style:none;margin:0;padding:0}
         <div class="field"><label for="officer">承辦人</label><input id="officer" autocomplete="off"></div>
       </div>
     </div>
+    <div class="screen-only" id="photoView" hidden>
+      <div class="photo-head">
+        <h2>照片</h2>
+        <p>現場或文件照片，可標註屬於哪一項檢查。照片只存在這支手機上。</p>
+        <div class="shoot">
+          <label class="cam">📷 拍照<input type="file" id="camInput" accept="image/*" capture="environment"></label>
+          <label class="lib">從相簿選<input type="file" id="libInput" accept="image/*" multiple></label>
+        </div>
+      </div>
+      <div class="busy" id="busy">照片處理中…</div>
+      <ul class="photos" id="photos"></ul>
+    </div>
     <div class="print-only" id="printView"></div>
   </section>
 </main>
@@ -185,6 +223,7 @@ ol.items{list-style:none;margin:0;padding:0}
   </div>
 </footer>
 <div class="toast" id="toast" role="status"></div>
+<div class="viewer" id="viewer"><img alt="照片放大"></div>
 
 <script>
 const LAW = "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060039";
@@ -237,7 +276,9 @@ const LABEL = { V:"V", NA:"／", X:"不齊全" };
 
 let store = {};
 try { store = JSON.parse(localStorage.getItem(KEY)) || {}; } catch {}
+const PHOTO = FORMS.length;
 let cur = store._cur ?? 0;
+if (!(cur >= 0 && cur <= PHOTO)) cur = 0;
 function save(){ store._cur = cur; try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch{} }
 function st(i = cur){
   const k = FORMS[i].key;
@@ -263,10 +304,15 @@ const esc = t => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":
 function renderTabs(){
   $("stages").innerHTML = FORMS.map((f, i) => {
     const c = counts(i), done = c.total && c.left===0 && c.x===0;
-    return `<button class="stage${done?" done":""}" role="tab" aria-selected="${i===cur}" data-i="${i}">${f.tab}<span class="dot"></span></button>`;
-  }).join("");
+    return `<button class="stage${done?" done":""}" role="tab" aria-selected="${i===cur}" data-i="${i}">${f.tab.replace("檢查","")}<span class="dot"></span></button>`;
+  }).join("") + `<button class="stage" role="tab" aria-selected="${cur===PHOTO}" data-i="${PHOTO}">照片${photos.length?`(${photos.length})`:""}</button>`;
 }
 function render(){
+  const isPhoto = cur===PHOTO;
+  $("checkView").hidden = isPhoto; $("photoView").hidden = !isPhoto;
+  $("copyBtn").textContent = isPhoto ? "分享照片" : "複製缺件清單";
+  $("resetBtn").textContent = isPhoto ? "刪除全部照片" : "清除本表";
+  if (isPhoto) { $("sheet").classList.remove("complete"); renderPhotos(); renderTabs(); renderPrint(); return; }
   const f = FORMS[cur], s = st();
   $("title").textContent = f.title;
   $("equip").innerHTML = EQUIP.map(e => {
@@ -303,6 +349,11 @@ function renderTally(){
   sheet.classList.toggle("complete", !!complete);
 }
 function renderPrint(){
+  if (cur===PHOTO) {
+    $("printView").innerHTML = `<div class="ph"><h2>照片</h2></div><div class="pgrid">${photos.map((p,n) =>
+      `<figure><img src="${p.data}"><figcaption>${n+1}. ${esc(tabName(p.form))}${p.caption?"：":""}${esc(p.caption||"")}<br>${fmtTime(p.time)}</figcaption></figure>`).join("")}</div>`;
+    return;
+  }
   const f = FORMS[cur], s = st();
   const rows = allItems().map((it, n) => {
     const r = s.res[it.id];
@@ -355,12 +406,17 @@ function addItem(){
 }
 $("addBtn").addEventListener("click", addItem);
 $("newItem").addEventListener("keydown", e => { if(e.key==="Enter") addItem(); });
-$("resetBtn").addEventListener("click", () => {
+$("resetBtn").addEventListener("click", async () => {
+  if (cur===PHOTO) {
+    if (!photos.length || !confirm(`確定刪除全部 ${photos.length} 張照片？刪除後無法復原。`)) return;
+    await dbClear(); photos = []; render(); toast("已刪除全部照片"); return;
+  }
   if (!confirm(`確定清除「${FORMS[cur].tab}」所有勾選與填寫內容？`)) return;
   delete store[FORMS[cur].key]; save(); render(); toast("已清除本表");
 });
 $("printBtn").addEventListener("click", () => { renderPrint(); window.print(); });
 $("copyBtn").addEventListener("click", async () => {
+  if (cur===PHOTO) { sharePhotos(); return; }
   const s = st(), items = allItems();
   const miss = items.map((it,n)=>({it,n})).filter(({it}) => s.res[it.id]==="X");
   const left = items.map((it,n)=>({it,n})).filter(({it}) => !s.res[it.id]);
@@ -388,6 +444,96 @@ let tt; function toast(m){ const el=$("toast"); el.textContent=m; el.classList.a
   b.addEventListener("click",()=>{ i=(i+1)%LV.length; try{localStorage.setItem(K,i);}catch{} apply(); });
   apply();
 })();
+
+// ===== 照片：存在手機的 IndexedDB =====
+let photos = [];
+const TAB_OPTS = [...FORMS.map(f => [f.key, f.tab]), ["other","其他"]];
+const tabName = k => (TAB_OPTS.find(o => o[0]===k) || ["", "其他"])[1];
+const fmtTime = t => { const d = new Date(t); return `${d.getFullYear()-1911}.${d.getMonth()+1}.${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; };
+function db(){
+  return new Promise((ok, no) => {
+    const r = indexedDB.open("equip-cert-photos", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("photos", { keyPath:"id" });
+    r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error);
+  });
+}
+async function tx(mode, fn){
+  const d = await db();
+  return new Promise((ok, no) => {
+    const t = d.transaction("photos", mode), st = t.objectStore("photos");
+    const out = fn(st);
+    t.oncomplete = () => ok(out && out.result); t.onerror = () => no(t.error);
+  });
+}
+const dbAll = () => tx("readonly", st => st.getAll());
+const dbPut = p => tx("readwrite", st => st.put(p));
+const dbDel = id => tx("readwrite", st => st.delete(id));
+const dbClear = () => tx("readwrite", st => st.clear());
+
+function shrink(file){
+  return new Promise((ok, no) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const max = 1600, k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); ok(c.toDataURL("image/jpeg", 0.78));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); no(new Error("無法讀取這張照片")); };
+    img.src = url;
+  });
+}
+async function addPhotos(files){
+  if (!files || !files.length) return;
+  $("busy").classList.add("on");
+  const lastForm = (photos[0] && photos[0].form) || FORMS[0].key;
+  for (const f of files) {
+    try {
+      const p = { id:"p"+Date.now()+Math.random().toString(36).slice(2,6), data: await shrink(f), caption:"", form:lastForm, time:Date.now() };
+      await dbPut(p); photos.unshift(p);
+    } catch (e) { toast(e.message || "照片儲存失敗"); }
+  }
+  $("busy").classList.remove("on"); render(); toast(`已加入 ${files.length} 張照片`);
+}
+function renderPhotos(){
+  if (!photos.length) { $("photos").innerHTML = `<li class="empty">還沒有照片。按「拍照」開啟相機，或從相簿選擇。</li>`; return; }
+  $("photos").innerHTML = photos.map((p, n) => `<li class="ph-card" data-id="${p.id}">
+    <img src="${p.data}" alt="照片 ${n+1}" loading="lazy">
+    <div class="ph-meta">
+      <select data-f="form" aria-label="屬於哪一項檢查">${TAB_OPTS.map(o => `<option value="${o[0]}"${o[0]===p.form?" selected":""}>${o[1]}</option>`).join("")}</select>
+      <input data-f="caption" placeholder="說明，例如：安全閥銘牌" value="${esc(p.caption||"")}">
+      <div class="ph-foot"><span>${n+1}．${fmtTime(p.time)}</span><button class="del" type="button" data-pdel="${p.id}">刪除</button></div>
+    </div></li>`).join("");
+}
+$("camInput").addEventListener("change", e => { addPhotos([...e.target.files]); e.target.value = ""; });
+$("libInput").addEventListener("change", e => { addPhotos([...e.target.files]); e.target.value = ""; });
+$("photos").addEventListener("click", async e => {
+  const d = e.target.closest("[data-pdel]");
+  if (d) { if (!confirm("刪除這張照片？")) return; await dbDel(d.dataset.pdel); photos = photos.filter(p => p.id!==d.dataset.pdel); render(); return; }
+  const img = e.target.closest("img");
+  if (img) { $("viewer").querySelector("img").src = img.src; $("viewer").classList.add("open"); }
+});
+$("viewer").addEventListener("click", () => $("viewer").classList.remove("open"));
+let saveT;
+$("photos").addEventListener("input", e => {
+  const card = e.target.closest(".ph-card"), f = e.target.dataset.f; if (!card || !f) return;
+  const p = photos.find(x => x.id===card.dataset.id); p[f] = e.target.value;
+  clearTimeout(saveT); saveT = setTimeout(() => dbPut(p), 300); renderPrint();
+});
+$("photos").addEventListener("change", e => { if (e.target.dataset.f==="form") e.target.dispatchEvent(new Event("input", { bubbles:true })); });
+async function sharePhotos(){
+  if (!photos.length) { toast("還沒有照片"); return; }
+  try {
+    const files = await Promise.all(photos.map(async (p, n) => {
+      const b = await (await fetch(p.data)).blob();
+      return new File([b], `照片${n+1}_${tabName(p.form)}${p.caption?"_"+p.caption.replace(/[\\/:*?"<>|]/g,""):""}.jpg`, { type:"image/jpeg" });
+    }));
+    if (navigator.canShare && navigator.canShare({ files })) { await navigator.share({ files, title:"設備檢查照片" }); }
+    else toast("這個瀏覽器不支援分享，請用「列印 / 存PDF」");
+  } catch (e) { if (e.name!=="AbortError") toast("分享失敗，請用「列印 / 存PDF」"); }
+}
+dbAll().then(list => { photos = (list || []).sort((a,b) => b.time - a.time); render(); }).catch(() => {});
 
 render();
 </script>
