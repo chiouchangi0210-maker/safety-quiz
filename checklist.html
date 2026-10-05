@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#24364a">
+<title>危險性設備合格證申請自檢表</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#eef1f4; --sheet:#ffffff; --ink:#1d2a36; --muted:#5c6b78; --line:#d5dce2;
+  --steel:#24364a; --steel-2:#3a5570; --pass:#23794a; --pass-bg:#e3f2e8;
+  --na:#5c6b78; --na-bg:#e9edf0; --miss:#b3261e; --miss-bg:#fbe7e5; --flag:#f2c230;
+  --fs:1;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#11181f; --sheet:#1a232c; --ink:#e4eaef; --muted:#9aa8b4; --line:#2e3b47;
+    --steel:#0d151c; --steel-2:#9fc0dc; --pass:#6fcf97; --pass-bg:#16302a;
+    --na:#9aa8b4; --na-bg:#25313b; --miss:#ff8a80; --miss-bg:#3a1f1d; --flag:#f2c230;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#11181f; --sheet:#1a232c; --ink:#e4eaef; --muted:#9aa8b4; --line:#2e3b47;
+  --steel:#0d151c; --steel-2:#9fc0dc; --pass:#6fcf97; --pass-bg:#16302a;
+  --na:#9aa8b4; --na-bg:#25313b; --miss:#ff8a80; --miss-bg:#3a1f1d;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  font-size:calc(15px*var(--fs));line-height:1.6;-webkit-text-size-adjust:100%}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--flag);outline-offset:2px}
+
+/* masthead */
+.mast{background:var(--steel);color:#fff;padding:14px 16px 0;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.mast-in{max-width:860px;margin:0 auto}
+.mast h1{margin:0;font-size:calc(17px*var(--fs));font-weight:700;letter-spacing:.02em;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.font-btn{background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:6px;padding:2px 10px;font-size:13px;font-weight:500}
+.stages{display:grid;grid-template-columns:repeat(4,1fr);margin-top:10px}
+.stage{background:none;border:0;color:rgba(255,255,255,.62);padding:8px 2px 10px;font-weight:500;font-size:calc(14px*var(--fs));border-bottom:4px solid transparent;position:relative}
+.stage[aria-selected="true"]{color:#fff;border-bottom-color:var(--flag);font-weight:700}
+.stage .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--flag);margin-left:4px;vertical-align:middle;opacity:0}
+.stage.done .dot{opacity:1}
+
+main{max-width:860px;margin:0 auto;padding:14px 12px 120px}
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:4px;position:relative;overflow:hidden}
+.sheet-head{padding:16px 16px 12px;border-bottom:2px solid var(--ink)}
+.sheet-head h2{margin:0 0 10px;padding-right:84px;font-size:calc(20px*var(--fs));font-weight:900;letter-spacing:.04em}
+.equip{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{border:1.5px solid var(--line);background:transparent;border-radius:3px;padding:4px 10px;font-size:calc(14px*var(--fs));display:inline-flex;gap:6px;align-items:center}
+.chip .box{width:15px;height:15px;border:1.5px solid var(--muted);border-radius:2px;display:inline-grid;place-items:center;font-size:11px;line-height:1}
+.chip[aria-pressed="true"]{border-color:var(--steel-2);color:var(--ink);font-weight:700}
+.chip[aria-pressed="true"] .box{background:var(--steel-2);border-color:var(--steel-2);color:var(--sheet)}
+.field{display:flex;align-items:center;gap:8px;font-size:calc(14px*var(--fs))}
+.field label{white-space:nowrap;color:var(--muted)}
+.field input{flex:1;min-width:0;border:0;border-bottom:1.5px solid var(--line);background:transparent;padding:4px 2px;font-size:max(16px,calc(15px*var(--fs)))}
+.field input:focus{outline:none;border-bottom-color:var(--steel-2)}
+
+.tally{display:flex;gap:14px;padding:8px 16px;font-size:calc(13px*var(--fs));color:var(--muted);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tally b{color:var(--ink);font-variant-numeric:tabular-nums}
+.tally .m b{color:var(--miss)}
+
+ol.items{list-style:none;margin:0;padding:0}
+.item{display:grid;grid-template-columns:44px 1fr;gap:2px 10px;padding:12px 16px;border-bottom:1px solid var(--line);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.item.is-v{background:var(--pass-bg)}
+.item.is-x{background:var(--miss-bg)}
+.tick{grid-row:1 / span 2;width:40px;height:40px;border:2px solid var(--muted);border-radius:6px;display:grid;place-items:center;font-size:26px;font-weight:900;line-height:1;color:var(--pass);background:var(--sheet);transition:transform .12s}
+.item.is-v .tick{border-color:var(--pass);color:var(--pass)}
+.item.is-na .tick{border-color:var(--na);color:var(--na)}
+.item.is-x .tick{border-color:var(--miss);color:var(--miss);font-size:20px}
+.item:active .tick{transform:scale(.92)}
+.head-line{display:flex;gap:6px}
+.item .no{font-weight:900;color:var(--muted);font-variant-numeric:tabular-nums}
+.item .name{font-weight:500}
+.item .note{grid-column:2;font-size:calc(13px*var(--fs));color:var(--muted)}
+.item .note a{color:var(--steel-2)}
+.res{grid-column:2;display:flex;gap:6px;margin-top:6px}
+.res button{flex:0 0 auto;min-height:30px;border:1px solid var(--line);background:var(--sheet);border-radius:3px;font-weight:500;font-size:calc(13px*var(--fs));padding:1px 10px;color:var(--muted)}
+.res button[data-v="V"][aria-pressed="true"]{background:var(--pass-bg);border-color:var(--pass);color:var(--pass)}
+.res button[data-v="NA"][aria-pressed="true"]{background:var(--na-bg);border-color:var(--na);color:var(--na)}
+.res button[data-v="X"][aria-pressed="true"]{background:var(--miss-bg);border-color:var(--miss);color:var(--miss)}
+.reason{grid-column:2;margin-top:4px}
+.reason input{width:100%;border:1.5px solid var(--miss);background:var(--miss-bg);border-radius:3px;padding:6px 8px;font-size:max(16px,calc(14px*var(--fs)))}
+.item.custom .name{display:flex;gap:6px;align-items:center}
+.del{border:0;background:none;color:var(--muted);font-size:13px;text-decoration:underline;padding:0}
+
+.add{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.add input{flex:1;min-width:0;border:1.5px dashed var(--line);background:transparent;border-radius:3px;padding:6px 8px;font-size:max(16px,calc(14px*var(--fs)))}
+.add button{border:1.5px solid var(--steel-2);background:transparent;color:var(--steel-2);border-radius:3px;font-weight:700;padding:4px 12px;white-space:nowrap}
+
+.remark{padding:12px 16px;font-size:calc(13px*var(--fs));color:var(--muted);border-bottom:1px solid var(--line)}
+.remark p{margin:0}
+.sign{padding:12px 16px 18px;display:grid;gap:10px}
+
+/* stamp: the one memorable thing */
+.stamp{position:absolute;right:14px;top:12px;width:92px;height:92px;border:3px solid var(--miss);border-radius:50%;
+  color:var(--miss);display:grid;place-items:center;text-align:center;font-weight:900;font-size:19px;line-height:1.15;
+  transform:rotate(-14deg) scale(1.6);opacity:0;pointer-events:none;mix-blend-mode:multiply}
+.stamp::before{content:"";position:absolute;inset:4px;border:1px solid var(--miss);border-radius:50%}
+.stamp small{display:block;font-size:10px;font-weight:700;margin-top:2px}
+.sheet.complete .stamp{opacity:.85;transform:rotate(-14deg) scale(1);transition:transform .28s cubic-bezier(.3,1.6,.5,1),opacity .2s}
+@media (prefers-color-scheme:dark){.stamp{mix-blend-mode:normal}}
+@media (prefers-reduced-motion:reduce){.sheet.complete .stamp{transition:none}}
+
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--sheet);border-top:1px solid var(--line);
+  padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));z-index:5}
+.bar-in{max-width:860px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.bar button{min-height:42px;border-radius:3px;font-weight:700;border:1.5px solid var(--line);background:transparent}
+.bar .primary{background:var(--steel-2);border-color:var(--steel-2);color:var(--sheet)}
+.toast{position:fixed;left:50%;bottom:calc(70px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--sheet);
+  padding:6px 14px;border-radius:4px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:6}
+.toast.show{opacity:1}
+
+
+
+/* print = the paper form */
+.print-only{display:none}
+@media print{
+  @page{size:A4;margin:14mm}
+  body{background:#fff;color:#000;font-size:11pt}
+  .mast,.bar,.toast,.add,.res,.reason,.del,.tally,.stamp,.screen-only{display:none!important}
+  main{padding:0;max-width:none}
+  .sheet{border:0}
+  .print-only{display:block}
+  table.pf{width:100%;border-collapse:collapse;font-size:10.5pt}
+  .pf th,.pf td{border:1px solid #000;padding:5px 6px;vertical-align:top;text-align:left}
+  .pf th{background:#eee}
+  .pf td.c{text-align:center;width:4.5em}
+  .pf td.n{text-align:center;width:2.6em}
+  .ph h2{text-align:center;font-size:15pt;margin:0 0 8px}
+  .ph p{margin:2px 0}
+  .pfoot{margin-top:8px}
+  .pfoot p{margin:3px 0}
+}
+</style>
+</head>
+<body>
+<header class="mast">
+  <div class="mast-in">
+    <h1><span>危險性設備合格證申請自檢表</span><button id="fontBtn" class="font-btn" type="button">字級</button></h1>
+    <nav class="stages" role="tablist" id="stages"></nav>
+  </div>
+</header>
+
+<main>
+  <section class="sheet" id="sheet">
+    <div class="stamp" aria-hidden="true"><div>資料<br>齊備<small id="stampDate"></small></div></div>
+    <div class="screen-only">
+      <div class="sheet-head">
+        <h2 id="title"></h2>
+        <div class="equip" id="equip"></div>
+        <div class="field"><label for="equipNo">設備編號</label><input id="equipNo" autocomplete="off" placeholder="輸入設備編號"></div>
+      </div>
+      <div class="tally" id="tally"></div>
+      <ol class="items" id="items"></ol>
+      <div class="add">
+        <input id="newItem" placeholder="新增其他檢附資料" autocomplete="off">
+        <button type="button" id="addBtn">新增</button>
+      </div>
+      <div class="remark">
+        <p>1. 檢附資料若為影本，需蓋「事業單位」章及「與正本相符」章。</p>
+        <p>2. 點一下項目就會打勾「✓」（符合），再點一次取消；無該項目者點「／ 無此項」，檢附資料不齊全者點「不齊全」並寫明原因。</p>
+      </div>
+      <div class="sign">
+        <div class="field"><label for="contact">事業單位聯絡人及電話</label><input id="contact" autocomplete="off"></div>
+        <div class="field"><label for="officer">承辦人</label><input id="officer" autocomplete="off"></div>
+      </div>
+    </div>
+    <div class="print-only" id="printView"></div>
+  </section>
+</main>
+
+<footer class="bar">
+  <div class="bar-in">
+    <button type="button" id="resetBtn">清除本表</button>
+    <button type="button" id="copyBtn">複製缺件清單</button>
+    <button type="button" class="primary" id="printBtn">列印 / 存PDF</button>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const LAW = "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060039";
+const FORMS = [
+  { key:"type", tab:"型式檢查", title:"申請型式檢查檢附資料一覽表", items:[
+    ["型式檢查申請書","依內容填列並加蓋事業單位章",true],
+    ["申請型式檢查之高壓氣體特定設備型式、構造詳圖及強度計算書。","由事業單位提供"],
+    ["製造、檢查設備之種類、能力及數量。"],
+    ["主任設計者學經歷概要。"],
+    ["施工負責人學經歷概要。"],
+    ["施工者資格及人數。"],
+    ["以熔接製造者，應檢附熔接人員資格證件、熔接程序規範及熔接程序資格檢定紀錄。"]
+  ]},
+  { key:"weld", tab:"熔接檢查", title:"申請熔接檢查檢附資料一覽表", items:[
+    ["熔接檢查申請書","依內容填列並加蓋事業單位章"],
+    ["材質證明一份。","由事業單位提供"],
+    ["熔接明細表二份及施工位置分類圖一份。"],
+    ["構造詳圖及強度計算書各二份。"],
+    ["熔接施工人員之熔接技術士資格證件。"],
+    ["製造設施型式檢查合格證明、熔接程序規範及熔接程序資格檢定紀錄等影本各一份。"]
+  ]},
+  { key:"struct", tab:"構造檢查", title:"申請構造檢查檢附資料一覽表", items:[
+    ["構造檢查申請書","依內容填列並加蓋事業單位章"],
+    ["高壓氣體特定設備明細表二份。","由事業單位提供"],
+    ["構造詳圖及強度計算書各二份。"],
+    ["以熔接製造者，附加蓋熔接檢查合格戳記之熔接明細表。"],
+    ["以鉚接製造者，附製造設施型式檢查合格證明。"],
+    ["由同一檢查機構實施同一座高壓氣體特定設備之熔接檢查及構造檢查者，得免檢附前項第二款、第三款之書件。"],
+    ["第一項構造檢查項目為施工方法、材料厚度、構造、尺寸、最高使用壓力、強度計算審查、人孔、清掃孔、安全裝置之規劃、耐壓試驗、超低溫設備之絕熱性能試驗、胴體、端板、管板等使用之材料及其他必要之檢查。"],
+    ["前項超低溫設備之絕熱性能試驗，得採絕熱性能相關佐證文件資料認定之。"]
+  ]},
+  { key:"final", tab:"竣工檢查", title:"申請竣工檢查檢附資料一覽表", items:[
+    ["竣工檢查申請書","依內容填列並加蓋事業單位章"],
+    ["構造或重新檢查合格戳記明細表","由事業單位提供"],
+    ["拓印紀錄","標明位於設備之位置"],
+    ["設置場所位置圖","全廠區及廠內位置平面圖"],
+    ["設備周圍狀況圖","標明該設備在廠區位置（如為鍋爐應有鍋爐房相對尺寸圖）"],
+    ["相關生產流程圖","該設備與相關之其他設備流程簡圖"],
+    ["安全閥規格及吹洩量計算書","安全閥之規格、尺寸、吹洩量等資料"],
+    ["設備必要吹洩量計算書","計算最大必要吹洩量，並檢附相關配管流程圖及佐證資料"],
+    ["安全閥測試報告","需測試人員簽章"],
+    ["其他安全裝置（破裂板、易熔塞）資料","檢附相關資料"],
+    ["附屬裝置規格資料","依設備檢查標準（高壓氣體勞工安全規則、CNS2139、9788等）檢附"],
+    ["自行檢查紀錄表"]
+  ]}
+];
+const EQUIP = ["鍋爐","第一種壓力容器","高壓氣體特定設備"];
+const KEY = "equip-cert-checklist-v1";
+const LABEL = { V:"V", NA:"／", X:"不齊全" };
+
+let store = {};
+try { store = JSON.parse(localStorage.getItem(KEY)) || {}; } catch {}
+let cur = store._cur ?? 0;
+function save(){ store._cur = cur; try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch{} }
+function st(i = cur){
+  const k = FORMS[i].key;
+  store[k] ||= { equip:[], no:"", contact:"", officer:"", res:{}, reason:{}, custom:[] };
+  return store[k];
+}
+function allItems(i = cur){
+  const f = FORMS[i], s = st(i);
+  return [
+    ...f.items.map((it, n) => ({ id:"b"+n, name:it[0], note:it[1]||"", law:!!it[2] })),
+    ...s.custom.map(c => ({ id:c.id, name:c.name, note:"", custom:true }))
+  ];
+}
+function counts(i = cur){
+  const s = st(i), items = allItems(i);
+  let v=0, na=0, x=0;
+  items.forEach(it => { const r = s.res[it.id]; if(r==="V")v++; else if(r==="NA")na++; else if(r==="X")x++; });
+  return { total:items.length, v, na, x, left:items.length-v-na-x };
+}
+const $ = id => document.getElementById(id);
+const esc = t => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function renderTabs(){
+  $("stages").innerHTML = FORMS.map((f, i) => {
+    const c = counts(i), done = c.total && c.left===0 && c.x===0;
+    return `<button class="stage${done?" done":""}" role="tab" aria-selected="${i===cur}" data-i="${i}">${f.tab}<span class="dot"></span></button>`;
+  }).join("");
+}
+function render(){
+  const f = FORMS[cur], s = st();
+  $("title").textContent = f.title;
+  $("equip").innerHTML = EQUIP.map(e => {
+    const on = s.equip.includes(e);
+    return `<button type="button" class="chip" aria-pressed="${on}" data-e="${e}"><span class="box">${on?"✓":""}</span>${e}</button>`;
+  }).join("");
+  $("equipNo").value = s.no; $("contact").value = s.contact; $("officer").value = s.officer;
+  $("items").innerHTML = allItems().map((it, n) => {
+    const r = s.res[it.id];
+    const note = it.law ? `${esc(it.note)}　<a href="${LAW}" target="_blank" rel="noopener">相關法規</a>` : esc(it.note);
+    const cls = r==="V"?" is-v":r==="NA"?" is-na":r==="X"?" is-x":"";
+    const mark = r==="V"?"✓":r==="NA"?"／":r==="X"?"✗":"";
+    return `<li class="item${it.custom?" custom":""}${cls}" data-id="${it.id}" role="checkbox" aria-checked="${r==="V"}" tabindex="0">
+      <span class="tick" aria-hidden="true">${mark}</span>
+      <span class="head-line"><span class="no">${n+1}.</span><span class="name">${esc(it.name)}${it.custom?` <button class="del" data-del="${it.id}" type="button">刪除</button>`:""}</span></span>
+      ${note?`<span class="note">${note}</span>`:""}
+      <div class="res" role="group" aria-label="第${n+1}項其他結果">
+        <button type="button" data-v="NA" aria-pressed="${r==="NA"}">／ 無此項</button>
+        <button type="button" data-v="X" aria-pressed="${r==="X"}">不齊全</button>
+      </div>
+      ${r==="X"?`<div class="reason"><input data-reason="${it.id}" placeholder="寫明不齊全原因" value="${esc(s.reason[it.id]||"")}"></div>`:""}
+    </li>`;
+  }).join("");
+  renderTally(); renderTabs(); renderPrint();
+}
+function renderTally(){
+  const c = counts();
+  $("tally").innerHTML = `<span>共 <b>${c.total}</b> 項</span><span>符合 <b>${c.v}</b></span><span>無此項 <b>${c.na}</b></span><span class="m">不齊全 <b>${c.x}</b></span><span>未檢查 <b>${c.left}</b></span>`;
+  const complete = c.total && c.left===0 && c.x===0;
+  const sheet = $("sheet");
+  if (complete && !sheet.classList.contains("complete")) {
+    const d = new Date(); $("stampDate").textContent = `${d.getFullYear()-1911}.${d.getMonth()+1}.${d.getDate()}`;
+  }
+  sheet.classList.toggle("complete", !!complete);
+}
+function renderPrint(){
+  const f = FORMS[cur], s = st();
+  const rows = allItems().map((it, n) => {
+    const r = s.res[it.id];
+    const res = r==="X" ? `不齊全：${esc(s.reason[it.id]||"")}` : (r ? LABEL[r] : "");
+    return `<tr><td class="n">${n+1}</td><td>${esc(it.name)}</td><td class="c">${res}</td><td>${esc(it.note)}</td></tr>`;
+  }).join("");
+  $("printView").innerHTML = `<div class="ph"><h2>${f.title}</h2>
+    <p>${EQUIP.map(e => (s.equip.includes(e)?"■":"□")+e).join("　")}</p>
+    <p>設備編號：${esc(s.no)}</p></div>
+    <table class="pf"><thead><tr><th>項次</th><th>檢附資料名稱</th><th>檢查結果</th><th>注意事項</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="pfoot"><p>備註：1. 檢附資料若為影本需蓋「事業單位」章及「與正本相符」章。2. 檢附資料符合者請於結果欄內打「V」，無該項目者「／」，檢附資料不齊全者請於結果欄內述明原因。</p>
+    <p>事業單位聯絡人及電話：${esc(s.contact)}　　承辦人：${esc(s.officer)}</p></div>`;
+}
+
+$("stages").addEventListener("click", e => {
+  const b = e.target.closest(".stage"); if(!b) return;
+  cur = +b.dataset.i; save(); render(); window.scrollTo({top:0});
+});
+$("equip").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if(!b) return;
+  const s = st(), v = b.dataset.e;
+  s.equip = s.equip.includes(v) ? s.equip.filter(x => x!==v) : [...s.equip, v];
+  save(); render();
+});
+$("items").addEventListener("click", e => {
+  const del = e.target.closest("[data-del]");
+  if (del) { const s = st(), id = del.dataset.del;
+    s.custom = s.custom.filter(c => c.id!==id); delete s.res[id]; delete s.reason[id]; save(); render(); return; }
+  if (e.target.closest("a, input")) return;
+  const row = e.target.closest(".item"); if(!row) return;
+  const b = e.target.closest(".res button");
+  const id = row.dataset.id, s = st(), v = b ? b.dataset.v : "V";
+  s.res[id] = s.res[id]===v ? undefined : v;
+  if (!s.res[id]) delete s.res[id];
+  save(); render();
+  if (v==="X" && s.res[id]==="X") { const inp = document.querySelector(`[data-reason="${id}"]`); inp && inp.focus(); }
+});
+$("items").addEventListener("keydown", e => {
+  if ((e.key===" "||e.key==="Enter") && e.target.classList.contains("item")) { e.preventDefault(); e.target.click(); }
+});
+$("items").addEventListener("input", e => {
+  const id = e.target.dataset.reason; if(!id) return;
+  st().reason[id] = e.target.value; save(); renderPrint();
+});
+[["equipNo","no"],["contact","contact"],["officer","officer"]].forEach(([el,k]) =>
+  $(el).addEventListener("input", e => { st()[k] = e.target.value; save(); renderPrint(); }));
+function addItem(){
+  const v = $("newItem").value.trim(); if(!v) return;
+  st().custom.push({ id:"c"+Date.now(), name:v }); $("newItem").value = ""; save(); render();
+}
+$("addBtn").addEventListener("click", addItem);
+$("newItem").addEventListener("keydown", e => { if(e.key==="Enter") addItem(); });
+$("resetBtn").addEventListener("click", () => {
+  if (!confirm(`確定清除「${FORMS[cur].tab}」所有勾選與填寫內容？`)) return;
+  delete store[FORMS[cur].key]; save(); render(); toast("已清除本表");
+});
+$("printBtn").addEventListener("click", () => { renderPrint(); window.print(); });
+$("copyBtn").addEventListener("click", async () => {
+  const s = st(), items = allItems();
+  const miss = items.map((it,n)=>({it,n})).filter(({it}) => s.res[it.id]==="X");
+  const left = items.map((it,n)=>({it,n})).filter(({it}) => !s.res[it.id]);
+  if (!miss.length && !left.length) { toast("沒有缺件或未檢查項目"); return; }
+  let t = `【${FORMS[cur].title}】${s.no?" 設備編號："+s.no:""}\n`;
+  if (miss.length) t += "不齊全：\n" + miss.map(({it,n}) => `${n+1}. ${it.name}${s.reason[it.id]?"（"+s.reason[it.id]+"）":""}`).join("\n") + "\n";
+  if (left.length) t += "尚未確認：\n" + left.map(({it,n}) => `${n+1}. ${it.name}`).join("\n");
+  try { await navigator.clipboard.writeText(t); toast("已複製，可貼到 LINE 或 Email"); }
+  catch { prompt("請手動複製：", t); }
+});
+let tt; function toast(m){ const el=$("toast"); el.textContent=m; el.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove("show"),1800); }
+
+// 字級：自動抵消手機系統放大字型，並可手動切換
+(function(){
+  const LV=[{n:"小",v:.85},{n:"中",v:1},{n:"大",v:1.15}], K="equip-cert-font";
+  let boost=1;
+  try{ const t=document.createElement("span"); t.textContent="國";
+    t.style.cssText="position:absolute;visibility:hidden;font-size:100px;line-height:1";
+    document.body.appendChild(t); const k=t.getBoundingClientRect().width/100; t.remove();
+    if(k>1.05&&k<4) boost=k; }catch{}
+  let i; try{ i=parseInt(localStorage.getItem(K),10);}catch{}
+  if(!(i>=0&&i<LV.length)) i=1;
+  const b=$("fontBtn");
+  const apply=()=>{ document.documentElement.style.setProperty("--fs",LV[i].v/boost); b.textContent="字級："+LV[i].n; };
+  b.addEventListener("click",()=>{ i=(i+1)%LV.length; try{localStorage.setItem(K,i);}catch{} apply(); });
+  apply();
+})();
+
+render();
+</script>
+</body>
+</html>
