@@ -414,7 +414,19 @@ $("resetBtn").addEventListener("click", async () => {
   if (!confirm(`確定清除「${FORMS[cur].tab}」所有勾選與填寫內容？`)) return;
   delete store[FORMS[cur].key]; save(); render(); toast("已清除本表");
 });
-$("printBtn").addEventListener("click", () => { renderPrint(); window.print(); });
+// 列印時用「檢查類別_設備編號_日期」當 PDF 預設檔名
+const baseTitle = document.title;
+function pdfName(){
+  const d = new Date(), day = `${d.getFullYear()-1911}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}`;
+  const nos = cur===PHOTO ? [] : [st().no.trim()];
+  const kind = cur===PHOTO ? "照片" : FORMS[cur].tab + "自檢表";
+  return [kind, ...nos.filter(Boolean), day].join("_").replace(/[\/:*?"<>|]/g, "-");
+}
+$("printBtn").addEventListener("click", () => {
+  renderPrint(); document.title = pdfName(); window.print();
+  setTimeout(() => { document.title = baseTitle; }, 1500);
+});
+window.addEventListener("afterprint", () => { document.title = baseTitle; });
 $("copyBtn").addEventListener("click", async () => {
   if (cur===PHOTO) { sharePhotos(); return; }
   const s = st(), items = allItems();
