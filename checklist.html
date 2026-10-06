@@ -144,26 +144,52 @@ ol.items{list-style:none;margin:0;padding:0}
 
 /* print = the paper form */
 .print-only{display:none}
+/* paper document (preview + print) */
+.paper{width:688px;background:#fff;color:#000;font-size:11pt;line-height:1.5;padding:0}
+.paper-in{position:relative}
+.paper table.pf{width:100%;border-collapse:collapse;font-size:10.5pt}
+.paper .pf th,.paper .pf td{border:1px solid #000;padding:5px 6px;vertical-align:top;text-align:left}
+.paper .pf th{background:#eee}
+.paper .pf td.c{text-align:center;width:4.5em}
+.paper .pf td.n{text-align:center;width:2.6em}
+.paper .ph h2{text-align:center;font-size:15pt;margin:0 0 8px}
+.paper .ph p{margin:2px 0}
+.paper .pfoot{margin-top:8px}
+.paper .pfoot p{margin:3px 0}
+.paper .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8mm}
+.paper .pgrid figure{margin:0;break-inside:avoid;border:1px solid #000;padding:3mm}
+.paper .pgrid img{width:100%;height:62mm;object-fit:contain;display:block}
+.paper .pgrid figcaption{font-size:10pt;margin-top:2mm}
+.ink{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible}
+.ink path,.ink line,.ink rect,.ink ellipse{fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* annotate preview */
+.pv{position:fixed;inset:0;z-index:30;background:#5b6670;display:none;overflow:auto;-webkit-overflow-scrolling:touch}
+.pv.open{display:block}
+.pv-stage{padding:64px 0 40px;display:flex;justify-content:center}
+.pv-scale{transform-origin:top left}
+.pv .paper{box-shadow:0 2px 14px rgba(0,0,0,.35);padding:14mm;box-sizing:content-box}
+.pv.drawing .ink{touch-action:none;cursor:crosshair}
+.pv:not(.drawing) .ink{pointer-events:none}
+.tools{position:fixed;top:0;right:0;left:0;z-index:31;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px;padding:calc(6px + env(safe-area-inset-top,0px)) 8px 6px;background:rgba(36,54,74,.96)}
+.tools button{min-height:36px;min-width:36px;border:0;border-radius:18px;background:rgba(255,255,255,.95);color:#1d2a36;font-weight:700;font-size:14px;padding:0 11px;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.tools button[aria-pressed="true"]{outline:3px solid var(--flag);outline-offset:-3px}
+.tools .sw{width:36px;padding:0}
+.tools .sw span{display:inline-block;width:20px;height:20px;border-radius:50%;vertical-align:middle}
+.tools .go{background:#3a5570;color:#fff}
+.tools .sep{width:100%;height:0}
+@media (min-width:700px){.tools .sep{display:none}}
+
 @media print{
   @page{size:A4;margin:14mm}
-  body{background:#fff;color:#000;font-size:11pt}
-  .mast,.bar,.toast,.add,.res,.reason,.del,.tally,.stamp,.screen-only{display:none!important}
-  main{padding:0;max-width:none}
-  .sheet{border:0}
-  .print-only{display:block}
-  table.pf{width:100%;border-collapse:collapse;font-size:10.5pt}
-  .pf th,.pf td{border:1px solid #000;padding:5px 6px;vertical-align:top;text-align:left}
-  .pf th{background:#eee}
-  .pf td.c{text-align:center;width:4.5em}
-  .pf td.n{text-align:center;width:2.6em}
-  .ph h2{text-align:center;font-size:15pt;margin:0 0 8px}
-  .ph p{margin:2px 0}
-  .pfoot{margin-top:8px}
-  .pfoot p{margin:3px 0}
-  .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8mm}
-  .pgrid figure{margin:0;break-inside:avoid;border:1px solid #000;padding:3mm}
-  .pgrid img{width:100%;height:62mm;object-fit:contain;display:block}
-  .pgrid figcaption{font-size:10pt;margin-top:2mm}
+  body{background:#fff}
+  body > *:not(#pv){display:none!important}
+  .pv{position:static;display:block!important;overflow:visible;background:#fff}
+  .tools{display:none!important}
+  .pv-stage{padding:0;display:block}
+  .pv-scale{transform:none!important;width:auto!important;height:auto!important}
+  .pv .paper{box-shadow:none;padding:0}
+}
 }
 </style>
 </head>
@@ -224,6 +250,25 @@ ol.items{list-style:none;margin:0;padding:0}
 </footer>
 <div class="toast" id="toast" role="status"></div>
 <div class="viewer" id="viewer"><img alt="照片放大"></div>
+<div class="pv" id="pv" aria-label="列印預覽與標註">
+  <div class="tools" id="tools">
+    <button type="button" data-mode="pen" aria-pressed="true" title="自由畫">✏️</button>
+    <button type="button" data-mode="line" aria-pressed="false" title="直線">╱ 直線</button>
+    <button type="button" data-mode="rect" aria-pressed="false" title="框">▢ 框</button>
+    <button type="button" data-mode="ellipse" aria-pressed="false" title="圈">◯ 圈</button>
+    <button type="button" data-mode="move" aria-pressed="false" title="捲動畫面">✋ 移動</button>
+    <span class="sep"></span>
+    <button type="button" class="sw" data-color="#d32f2f" aria-pressed="true" title="紅"><span style="background:#d32f2f"></span></button>
+    <button type="button" class="sw" data-color="#1565c0" aria-pressed="false" title="藍"><span style="background:#1565c0"></span></button>
+    <button type="button" class="sw" data-color="#111111" aria-pressed="false" title="黑"><span style="background:#111"></span></button>
+    <button type="button" id="widthBtn" title="線條粗細">細</button>
+    <button type="button" id="undoBtn" title="復原">↶ 復原</button>
+    <button type="button" id="inkClear" title="清除標註">清除</button>
+    <button type="button" id="pvClose">關閉</button>
+    <button type="button" class="go" id="pvPrint">列印 / 存PDF</button>
+  </div>
+  <div class="pv-stage"><div class="pv-scale" id="pvScale"><div class="paper" id="paper"><div class="paper-in"><div id="paperDoc"></div><svg class="ink" id="ink" xmlns="http://www.w3.org/2000/svg"></svg></div></div></div></div>
+</div>
 
 <script>
 const LAW = "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060039";
@@ -422,8 +467,9 @@ function pdfName(){
   const kind = cur===PHOTO ? "照片" : FORMS[cur].tab + "自檢表";
   return [kind, ...nos.filter(Boolean), day].join("_").replace(/[\/:*?"<>|]/g, "-");
 }
-$("printBtn").addEventListener("click", () => {
-  renderPrint(); document.title = pdfName(); window.print();
+$("printBtn").addEventListener("click", openPreview);
+$("pvPrint").addEventListener("click", () => {
+  document.title = pdfName(); window.print();
   setTimeout(() => { document.title = baseTitle; }, 1500);
 });
 window.addEventListener("afterprint", () => { document.title = baseTitle; });
@@ -456,6 +502,77 @@ let tt; function toast(m){ const el=$("toast"); el.textContent=m; el.classList.a
   b.addEventListener("click",()=>{ i=(i+1)%LV.length; try{localStorage.setItem(K,i);}catch{} apply(); });
   apply();
 })();
+
+// ===== 列印預覽 + 手繪標註 =====
+const ink = $("ink"), pv = $("pv");
+let mode = "pen", color = "#d32f2f", widths = [2.5, 5], wi = 0, drawing = null;
+function inkStore(){
+  if (cur===PHOTO) { store._photoInk ||= []; return store._photoInk; }
+  const s = st(); s.ink ||= []; return s.ink;
+}
+function shapeSvg(o){
+  const a = `stroke="${o.c}" stroke-width="${o.w}"`;
+  if (o.t==="pen") return `<path ${a} d="M${o.p.map(q=>q.join(",")).join(" L")}"/>`;
+  const [x1,y1] = o.p[0], [x2,y2] = o.p[o.p.length-1];
+  if (o.t==="line") return `<line ${a} x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+  if (o.t==="rect") return `<rect ${a} x="${Math.min(x1,x2)}" y="${Math.min(y1,y2)}" width="${Math.abs(x2-x1)}" height="${Math.abs(y2-y1)}"/>`;
+  return `<ellipse ${a} cx="${(x1+x2)/2}" cy="${(y1+y2)/2}" rx="${Math.abs(x2-x1)/2}" ry="${Math.abs(y2-y1)/2}"/>`;
+}
+function drawInk(extra){
+  ink.innerHTML = inkStore().map(shapeSvg).join("") + (extra ? shapeSvg(extra) : "");
+}
+function fit(){
+  const paper = $("paper"), w = paper.offsetWidth, h = paper.offsetHeight;
+  const k = Math.min(1, (window.innerWidth - 16) / w);
+  $("pvScale").style.transform = `scale(${k})`;
+  $("pvScale").style.width = w*k + "px"; $("pvScale").style.height = h*k + "px";
+  document.querySelector(".pv-stage").style.paddingTop = $("tools").offsetHeight + 12 + "px";
+}
+function openPreview(){
+  renderPrint();
+  $("paperDoc").innerHTML = $("printView").innerHTML;
+  pv.classList.add("open"); document.body.style.overflow = "hidden";
+  setMode(mode); drawInk();
+  requestAnimationFrame(fit);
+  $("paperDoc").querySelectorAll("img").forEach(im => im.addEventListener("load", fit, { once:true }));
+}
+function closePreview(){ pv.classList.remove("open"); document.body.style.overflow = ""; }
+function setMode(m){
+  mode = m; pv.classList.toggle("drawing", m!=="move");
+  $("tools").querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode===m));
+}
+function pt(e){
+  const r = ink.getBoundingClientRect(), k = r.width / ink.clientWidth || 1;
+  return [Math.round((e.clientX - r.left)/k*10)/10, Math.round((e.clientY - r.top)/k*10)/10];
+}
+ink.addEventListener("pointerdown", e => {
+  if (mode==="move") return;
+  e.preventDefault(); ink.setPointerCapture(e.pointerId);
+  drawing = { t:mode, c:color, w:widths[wi], p:[pt(e)] };
+});
+ink.addEventListener("pointermove", e => {
+  if (!drawing) return; e.preventDefault();
+  const q = pt(e);
+  if (drawing.t==="pen") drawing.p.push(q); else drawing.p[1] = q;
+  drawInk(drawing);
+});
+function endStroke(){
+  if (!drawing) return;
+  if (drawing.p.length > 1) { inkStore().push(drawing); save(); }
+  drawing = null; drawInk();
+}
+ink.addEventListener("pointerup", endStroke);
+ink.addEventListener("pointercancel", endStroke);
+$("tools").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.mode) setMode(b.dataset.mode);
+  if (b.dataset.color) { color = b.dataset.color; $("tools").querySelectorAll("[data-color]").forEach(x => x.setAttribute("aria-pressed", x===b)); if (mode==="move") setMode("pen"); }
+});
+$("widthBtn").addEventListener("click", () => { wi = 1 - wi; $("widthBtn").textContent = wi ? "粗" : "細"; });
+$("undoBtn").addEventListener("click", () => { inkStore().pop(); save(); drawInk(); });
+$("inkClear").addEventListener("click", () => { if (!inkStore().length || !confirm("清除這一頁所有標註？")) return; inkStore().length = 0; save(); drawInk(); });
+$("pvClose").addEventListener("click", closePreview);
+window.addEventListener("resize", () => { if (pv.classList.contains("open")) fit(); });
 
 // ===== 照片：存在手機的 IndexedDB =====
 let photos = [];
