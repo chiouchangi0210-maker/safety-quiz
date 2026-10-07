@@ -264,8 +264,6 @@ ol.items{list-style:none;margin:0;padding:0}
     <button type="button" data-mode="rect" aria-pressed="false" title="框">▢ 框</button>
     <button type="button" data-mode="ellipse" aria-pressed="false" title="圈">◯ 圈</button>
     <button type="button" data-mode="move" aria-pressed="true" title="捲動、縮放畫面">✋ 移動</button>
-    <button type="button" id="zoomOut" title="縮小">－</button>
-    <button type="button" id="zoomIn" title="放大">＋</button>
     <span class="sep"></span>
     <button type="button" class="sw" data-color="#d32f2f" aria-pressed="true" title="紅"><span style="background:#d32f2f"></span></button>
     <button type="button" class="sw" data-color="#1565c0" aria-pressed="false" title="藍"><span style="background:#1565c0"></span></button>
@@ -614,8 +612,6 @@ function setZoom(d){
   zoom = ZOOMS[i]; fit();
   toast(zoom===1 ? "整頁顯示" : `放大 ${zoom} 倍`);
 }
-$("zoomIn").addEventListener("click", () => setZoom(1));
-$("zoomOut").addEventListener("click", () => setZoom(-1));
 
 // ===== 產生 PDF 並分享 =====
 function loadScript(src){
