@@ -176,6 +176,7 @@ ol.items{list-style:none;margin:0;padding:0}
 .pv .paper{box-shadow:0 2px 14px rgba(0,0,0,.35);padding:14mm;box-sizing:content-box}
 .pv.drawing .ink{touch-action:none;cursor:crosshair}
 .pv:not(.drawing){cursor:grab}
+.pv.drawing .paper{outline:3px dashed var(--flag);outline-offset:4px}
 .pv:not(.drawing) .ink{pointer-events:none}
 .tools{position:fixed;top:0;right:0;left:0;z-index:31;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px;padding:calc(6px + env(safe-area-inset-top,0px)) 8px 6px;background:rgba(36,54,74,.96)}
 .tools button{min-height:36px;min-width:36px;border:0;border-radius:18px;background:rgba(255,255,255,.95);color:#1d2a36;font-weight:700;font-size:14px;padding:0 11px;box-shadow:0 1px 4px rgba(0,0,0,.3)}
@@ -258,11 +259,11 @@ ol.items{list-style:none;margin:0;padding:0}
 <div class="viewer" id="viewer"><img alt="照片放大"></div>
 <div class="pv" id="pv" aria-label="列印預覽與標註">
   <div class="tools" id="tools">
-    <button type="button" data-mode="pen" aria-pressed="true" title="自由畫">✏️</button>
+    <button type="button" data-mode="pen" aria-pressed="false" title="自由畫">✏️ 畫筆</button>
     <button type="button" data-mode="line" aria-pressed="false" title="直線">╱ 直線</button>
     <button type="button" data-mode="rect" aria-pressed="false" title="框">▢ 框</button>
     <button type="button" data-mode="ellipse" aria-pressed="false" title="圈">◯ 圈</button>
-    <button type="button" data-mode="move" aria-pressed="false" title="捲動畫面">✋ 移動</button>
+    <button type="button" data-mode="move" aria-pressed="true" title="捲動、縮放畫面">✋ 移動</button>
     <button type="button" id="zoomOut" title="縮小">－</button>
     <button type="button" id="zoomIn" title="放大">＋</button>
     <span class="sep"></span>
@@ -475,14 +476,22 @@ $("resetBtn").addEventListener("click", async () => {
 // 列印時用「檢查類別_設備編號_日期」當 PDF 預設檔名
 const baseTitle = document.title;
 function pdfName(){
-  const d = new Date(), day = `${d.getFullYear()-1911}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}`;
+  const d = new Date(), pad = n => String(n).padStart(2,"0");
+  const day = `${d.getFullYear()-1911}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}`;
   const nos = cur===PHOTO ? [] : [st().no.trim()];
   const kind = cur===PHOTO ? "照片" : FORMS[cur].tab + "自檢表";
   return [kind, ...nos.filter(Boolean), day].join("_").replace(/[\/:*?"<>|]/g, "-");
 }
+// 讓使用者確認或修改檔名；按取消則不輸出
+function askName(){
+  const n = prompt("PDF 檔名（可修改，例如加上廠區或設備名稱）：", pdfName());
+  if (n===null) return null;
+  return (n.trim() || pdfName()).replace(/\.pdf$/i, "").replace(/[\/:*?"<>|]/g, "-");
+}
 $("printBtn").addEventListener("click", openPreview);
 $("pvPrint").addEventListener("click", () => {
-  document.title = pdfName(); window.print();
+  const n = askName(); if (n===null) return;
+  document.title = n; window.print();
   setTimeout(() => { document.title = baseTitle; }, 1500);
 });
 window.addEventListener("afterprint", () => { document.title = baseTitle; });
@@ -521,7 +530,7 @@ const pv = $("pv");
 // 每一頁一個畫布：照片每頁各一個；檢查表整份一個
 const inks = () => cur===PHOTO ? [...$("paperDoc").querySelectorAll(".ppage .ink")] : [$("ink")];
 let zoom = 1;
-let mode = "pen", color = "#d32f2f", widths = [2.5, 5], wi = 0, drawing = null;
+let mode = "move", color = "#d32f2f", widths = [2.5, 5], wi = 0, drawing = null;
 function inkStore(){
   if (cur===PHOTO) { store._photoInk ||= []; return store._photoInk; }
   const s = st(); s.ink ||= []; return s.ink;
@@ -553,7 +562,7 @@ function openPreview(){
   if (cur===PHOTO) $("paperDoc").querySelectorAll(".ppage").forEach((pg, k) => pg.insertAdjacentHTML("beforeend", `<svg class="ink" data-g="${k}" xmlns="http://www.w3.org/2000/svg"></svg>`));
   $("ink").style.display = cur===PHOTO ? "none" : "";
   pv.classList.add("open"); document.body.style.overflow = "hidden";
-  setMode(mode); drawInk();
+  setMode("move"); drawInk();
   requestAnimationFrame(fit);
   $("paperDoc").querySelectorAll("img").forEach(im => im.addEventListener("load", fit, { once:true }));
 }
@@ -588,8 +597,12 @@ $("paper").addEventListener("pointerup", endStroke);
 $("paper").addEventListener("pointercancel", endStroke);
 $("tools").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
-  if (b.dataset.mode) setMode(b.dataset.mode);
-  if (b.dataset.color) { color = b.dataset.color; $("tools").querySelectorAll("[data-color]").forEach(x => x.setAttribute("aria-pressed", x===b)); if (mode==="move") setMode("pen"); }
+  if (b.dataset.mode) {
+    const m = b.dataset.mode;
+    if (m!=="move" && m===mode) { setMode("move"); toast("已停止繪圖，可以滑動、縮放畫面"); }
+    else { setMode(m); toast(m==="move" ? "可以滑動、縮放畫面" : "繪圖中，畫完請點「✋ 移動」"); }
+  }
+  if (b.dataset.color) { color = b.dataset.color; $("tools").querySelectorAll("[data-color]").forEach(x => x.setAttribute("aria-pressed", x===b)); }
 });
 $("widthBtn").addEventListener("click", () => { wi = 1 - wi; $("widthBtn").textContent = wi ? "粗" : "細"; });
 $("undoBtn").addEventListener("click", () => { inkStore().pop(); save(); drawInk(); });
@@ -599,8 +612,7 @@ const ZOOMS = [1, 1.5, 2, 3];
 function setZoom(d){
   const i = Math.max(0, Math.min(ZOOMS.length-1, ZOOMS.indexOf(zoom) + d));
   zoom = ZOOMS[i]; fit();
-  if (zoom > 1 && mode!=="move") setMode("move");
-  toast(zoom===1 ? "整頁顯示" : `放大 ${zoom} 倍，用「✋ 移動」拖曳畫面`);
+  toast(zoom===1 ? "整頁顯示" : `放大 ${zoom} 倍`);
 }
 $("zoomIn").addEventListener("click", () => setZoom(1));
 $("zoomOut").addEventListener("click", () => setZoom(-1));
@@ -613,7 +625,7 @@ function loadScript(src){
     document.head.appendChild(sc);
   });
 }
-async function buildPdf(){
+async function buildPdf(name){
   await loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");
   await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
   const host = document.createElement("div");
@@ -645,7 +657,7 @@ async function buildPdf(){
       }
     }
   } finally { host.remove(); }
-  return new File([pdf.output("blob")], pdfName() + ".pdf", { type:"application/pdf" });
+  return new File([pdf.output("blob")], (name || pdfName()) + ".pdf", { type:"application/pdf" });
 }
 // 分享要在使用者點擊的當下呼叫；產生 PDF 需要幾秒，若超時就改成「再點一次分享」
 let readyPdf = null;
@@ -666,9 +678,10 @@ $("pvShare").addEventListener("click", async () => {
     catch (e) { if (e.name==="AbortError") resetShareBtn(); else toast("分享失敗：" + e.message); }
     return;
   }
+  const name = askName(); if (name===null) return;
   btn.disabled = true; btn.textContent = "產生中…";
   let file;
-  try { file = await buildPdf(); }
+  try { file = await buildPdf(name); }
   catch (e) { toast(e.message || "產生 PDF 失敗"); btn.disabled = false; btn.textContent = "分享PDF"; return; }
   btn.disabled = false;
   try { await sharePdf(file); resetShareBtn(); }
