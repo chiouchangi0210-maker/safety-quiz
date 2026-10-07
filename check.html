@@ -160,7 +160,7 @@ ol.items{list-style:none;margin:0;padding:0}
 .paper .ppage{position:relative;height:268mm;display:flex;flex-direction:column;gap:6mm;overflow:hidden;break-after:page;page-break-after:always}
 .paper .ppage:last-child{break-after:auto;page-break-after:auto}
 .paper .ppage h2{text-align:center;font-size:15pt;margin:0;line-height:1.3}
-.paper .ppage figure{margin:0;flex:1 1 0;min-height:0;border:1px solid #000;padding:3mm;display:flex;flex-direction:column}
+.paper .ppage figure{margin:0;flex:0 0 auto;height:122mm;border:1px solid #000;padding:3mm;display:flex;flex-direction:column}
 .paper .ppage figure .im{flex:1 1 0;min-height:0;display:flex;align-items:center;justify-content:center}
 .paper .ppage img{max-width:100%;max-height:100%;object-fit:contain;display:block}
 .paper .ppage figcaption{font-size:10.5pt;margin-top:2mm;line-height:1.4}
@@ -171,10 +171,11 @@ ol.items{list-style:none;margin:0;padding:0}
 /* annotate preview */
 .pv{position:fixed;inset:0;z-index:30;background:#5b6670;display:none;overflow:auto;-webkit-overflow-scrolling:touch}
 .pv.open{display:block}
-.pv-stage{padding:64px 0 40px;display:flex;justify-content:center}
-.pv-scale{transform-origin:top left}
+.pv-stage{padding:64px 8px 40px;display:block}
+.pv-scale{transform-origin:top left;margin:0 auto}
 .pv .paper{box-shadow:0 2px 14px rgba(0,0,0,.35);padding:14mm;box-sizing:content-box}
 .pv.drawing .ink{touch-action:none;cursor:crosshair}
+.pv:not(.drawing){cursor:grab}
 .pv:not(.drawing) .ink{pointer-events:none}
 .tools{position:fixed;top:0;right:0;left:0;z-index:31;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px;padding:calc(6px + env(safe-area-inset-top,0px)) 8px 6px;background:rgba(36,54,74,.96)}
 .tools button{min-height:36px;min-width:36px;border:0;border-radius:18px;background:rgba(255,255,255,.95);color:#1d2a36;font-weight:700;font-size:14px;padding:0 11px;box-shadow:0 1px 4px rgba(0,0,0,.3)}
@@ -262,6 +263,8 @@ ol.items{list-style:none;margin:0;padding:0}
     <button type="button" data-mode="rect" aria-pressed="false" title="框">▢ 框</button>
     <button type="button" data-mode="ellipse" aria-pressed="false" title="圈">◯ 圈</button>
     <button type="button" data-mode="move" aria-pressed="false" title="捲動畫面">✋ 移動</button>
+    <button type="button" id="zoomOut" title="縮小">－</button>
+    <button type="button" id="zoomIn" title="放大">＋</button>
     <span class="sep"></span>
     <button type="button" class="sw" data-color="#d32f2f" aria-pressed="true" title="紅"><span style="background:#d32f2f"></span></button>
     <button type="button" class="sw" data-color="#1565c0" aria-pressed="false" title="藍"><span style="background:#1565c0"></span></button>
@@ -270,7 +273,8 @@ ol.items{list-style:none;margin:0;padding:0}
     <button type="button" id="undoBtn" title="復原">↶ 復原</button>
     <button type="button" id="inkClear" title="清除標註">清除</button>
     <button type="button" id="pvClose">關閉</button>
-    <button type="button" class="go" id="pvPrint">列印 / 存PDF</button>
+    <button type="button" class="go" id="pvShare">分享PDF</button>
+    <button type="button" class="go" id="pvPrint">列印</button>
   </div>
   <div class="pv-stage"><div class="pv-scale" id="pvScale"><div class="paper" id="paper"><div class="paper-in"><div id="paperDoc"></div><svg class="ink" id="ink" xmlns="http://www.w3.org/2000/svg"></svg></div></div></div></div>
 </div>
@@ -404,7 +408,7 @@ function renderPrint(){
     for (let i = 0; i < photos.length; i += 2) pages.push(photos.slice(i, i + 2));
     const fig = (p, n) => `<figure><div class="im"><img src="${p.data}"></div><figcaption>${n+1}. ${esc(tabName(p.form))}${p.caption?"：":""}${esc(p.caption||"")}　${fmtTime(p.time)}</figcaption></figure>`;
     $("printView").innerHTML = pages.length
-      ? pages.map((pg, k) => `<div class="ppage">${k===0?"<h2>照片</h2>":""}${pg.map((p, j) => fig(p, k*2+j)).join("")}${pg.length===1?'<figure style="visibility:hidden"></figure>':""}</div>`).join("")
+      ? pages.map((pg, k) => `<div class="ppage">${k===0?"<h2>照片</h2>":""}${pg.map((p, j) => fig(p, k*2+j)).join("")}</div>`).join("")
       : `<div class="ppage"><h2>照片</h2><p>（尚無照片）</p></div>`;
     return;
   }
@@ -516,6 +520,7 @@ let tt; function toast(m){ const el=$("toast"); el.textContent=m; el.classList.a
 const pv = $("pv");
 // 每一頁一個畫布：照片每頁各一個；檢查表整份一個
 const inks = () => cur===PHOTO ? [...$("paperDoc").querySelectorAll(".ppage .ink")] : [$("ink")];
+let zoom = 1;
 let mode = "pen", color = "#d32f2f", widths = [2.5, 5], wi = 0, drawing = null;
 function inkStore(){
   if (cur===PHOTO) { store._photoInk ||= []; return store._photoInk; }
@@ -537,7 +542,7 @@ function drawInk(extra){
 }
 function fit(){
   const paper = $("paper"), w = paper.offsetWidth, h = paper.offsetHeight;
-  const k = Math.min(1, (window.innerWidth - 16) / w);
+  const k = Math.min(1, (window.innerWidth - 16) / w) * zoom;
   $("pvScale").style.transform = `scale(${k})`;
   $("pvScale").style.width = w*k + "px"; $("pvScale").style.height = h*k + "px";
   document.querySelector(".pv-stage").style.paddingTop = $("tools").offsetHeight + 12 + "px";
@@ -552,7 +557,7 @@ function openPreview(){
   requestAnimationFrame(fit);
   $("paperDoc").querySelectorAll("img").forEach(im => im.addEventListener("load", fit, { once:true }));
 }
-function closePreview(){ pv.classList.remove("open"); document.body.style.overflow = ""; }
+function closePreview(){ resetShareBtn(); pv.classList.remove("open"); document.body.style.overflow = ""; }
 function setMode(m){
   mode = m; pv.classList.toggle("drawing", m!=="move");
   $("tools").querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode===m));
@@ -576,7 +581,7 @@ $("paper").addEventListener("pointermove", e => {
 });
 function endStroke(){
   if (!drawing) return;
-  if (drawing.p.length > 1) { inkStore().push(drawing); save(); }
+  if (drawing.p.length > 1) { inkStore().push(drawing); save(); resetShareBtn(); }
   drawing = null; drawInk();
 }
 $("paper").addEventListener("pointerup", endStroke);
@@ -590,6 +595,88 @@ $("widthBtn").addEventListener("click", () => { wi = 1 - wi; $("widthBtn").textC
 $("undoBtn").addEventListener("click", () => { inkStore().pop(); save(); drawInk(); });
 $("inkClear").addEventListener("click", () => { if (!inkStore().length || !confirm("清除這一頁所有標註？")) return; inkStore().length = 0; save(); drawInk(); });
 $("pvClose").addEventListener("click", closePreview);
+const ZOOMS = [1, 1.5, 2, 3];
+function setZoom(d){
+  const i = Math.max(0, Math.min(ZOOMS.length-1, ZOOMS.indexOf(zoom) + d));
+  zoom = ZOOMS[i]; fit();
+  if (zoom > 1 && mode!=="move") setMode("move");
+  toast(zoom===1 ? "整頁顯示" : `放大 ${zoom} 倍，用「✋ 移動」拖曳畫面`);
+}
+$("zoomIn").addEventListener("click", () => setZoom(1));
+$("zoomOut").addEventListener("click", () => setZoom(-1));
+
+// ===== 產生 PDF 並分享 =====
+function loadScript(src){
+  return new Promise((ok, no) => {
+    if (document.querySelector(`script[src="${src}"]`)) return ok();
+    const sc = document.createElement("script"); sc.src = src; sc.onload = ok; sc.onerror = () => no(new Error("載入失敗，請確認網路"));
+    document.head.appendChild(sc);
+  });
+}
+async function buildPdf(){
+  await loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");
+  await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
+  const host = document.createElement("div");
+  host.style.cssText = "position:fixed;left:-10000px;top:0;width:688px;background:#fff";
+  host.innerHTML = `<div class="paper">${$("paper").querySelector(".paper-in").outerHTML}</div>`;
+  document.body.appendChild(host);
+  await Promise.all([...host.querySelectorAll("img")].map(im => im.complete ? 0 : new Promise(r => { im.onload = im.onerror = r; })));
+  const pdf = new window.jspdf.jsPDF({ orientation:"portrait", unit:"mm", format:"a4" });
+  const W = 182, H = 268, M = 14;
+  const snap = el => html2canvas(el, { scale:2, backgroundColor:"#ffffff", useCORS:true, logging:false });
+  try {
+    if (cur===PHOTO) {
+      const pages = [...host.querySelectorAll(".ppage")];
+      for (let i = 0; i < pages.length; i++) {
+        const c = await snap(pages[i]);
+        if (i) pdf.addPage();
+        pdf.addImage(c.toDataURL("image/jpeg", 0.88), "JPEG", M, M, W, W * c.height / c.width);
+      }
+    } else {
+      const c = await snap(host.querySelector(".paper-in"));
+      const pageH = Math.floor(c.width * H / W);
+      for (let y = 0, i = 0; y < c.height; y += pageH, i++) {
+        const part = document.createElement("canvas");
+        part.width = c.width; part.height = Math.min(pageH, c.height - y);
+        const g = part.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, part.width, part.height);
+        g.drawImage(c, 0, -y);
+        if (i) pdf.addPage();
+        pdf.addImage(part.toDataURL("image/jpeg", 0.92), "JPEG", M, M, W, W * part.height / part.width);
+      }
+    }
+  } finally { host.remove(); }
+  return new File([pdf.output("blob")], pdfName() + ".pdf", { type:"application/pdf" });
+}
+// 分享要在使用者點擊的當下呼叫；產生 PDF 需要幾秒，若超時就改成「再點一次分享」
+let readyPdf = null;
+function sharePdf(file){
+  if (navigator.canShare && navigator.canShare({ files:[file] })) return navigator.share({ files:[file], title:file.name });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = file.name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  toast("這個瀏覽器不支援分享，已改為下載 PDF");
+  return Promise.resolve();
+}
+function resetShareBtn(){ readyPdf = null; $("pvShare").textContent = "分享PDF"; }
+$("pvShare").addEventListener("click", async () => {
+  const btn = $("pvShare"); if (btn.disabled) return;
+  if (readyPdf) {
+    const f = readyPdf;
+    try { await sharePdf(f); resetShareBtn(); }
+    catch (e) { if (e.name==="AbortError") resetShareBtn(); else toast("分享失敗：" + e.message); }
+    return;
+  }
+  btn.disabled = true; btn.textContent = "產生中…";
+  let file;
+  try { file = await buildPdf(); }
+  catch (e) { toast(e.message || "產生 PDF 失敗"); btn.disabled = false; btn.textContent = "分享PDF"; return; }
+  btn.disabled = false;
+  try { await sharePdf(file); resetShareBtn(); }
+  catch (e) {
+    if (e.name==="AbortError") { resetShareBtn(); return; }
+    readyPdf = file; btn.textContent = "📤 點此分享"; toast("PDF 已完成，請再點一次「點此分享」");
+  }
+});
 window.addEventListener("resize", () => { if (pv.classList.contains("open")) fit(); });
 
 // ===== 照片：存在手機的 IndexedDB =====
