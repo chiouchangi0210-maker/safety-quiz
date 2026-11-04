@@ -270,7 +270,7 @@
     .search::before { content: "🔍"; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: .6; }
     .search button { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); border: 0; background: none; font-size: 18px; color: #6b7785; min-height: 32px; padding: 0 8px; }
     .search input::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
-    .search-note { grid-column: 1 / -1; margin: -2px 0 0; font-size: 12px; color: #b3261e; }
+    .search-note { grid-column: 1 / -1; margin: -2px 0 0; font-size: 12px; color: #b3261e; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
     .search-note:empty { display: none; }
     .hidden { display: none !important; }
     /* 底部按鈕：兩列 */
@@ -432,7 +432,7 @@
       return todayIso() > CONFIG.expiryDate;
     }
 
-    const APP_VERSION = "2026.11.04-3";
+    const APP_VERSION = "2026.11.04-4";
     document.getElementById("verLine").textContent = `版本 ${APP_VERSION}｜使用期限 ${CONFIG.expiryDate}`;
 
     function boot() {
@@ -488,15 +488,37 @@
         const n = QUESTIONS.filter(q => q.chapter === c).length;
         chapSel.add(new Option(`${c}（${n} 題）`, c));
       });
-      chapSel.onchange = () => { current = 0; rebuildActiveIds(); render(); };
-      const sIn = document.getElementById("search"), sClr = document.getElementById("searchClear");
-      let sT;
+      chapSel.onchange = () => { current = 0; rebuildActiveIds(); render(); document.getElementById("searchClear").click(); };
+      const sIn = document.getElementById("search"), sClr = document.getElementById("searchClear"), sNote = document.getElementById("searchNote");
+      let sT, hits = [], hitAt = 0;
+      // 搜尋＝跳到符合的題目；上一題、下一題仍可在全部題目間移動
+      function doSearch(){
+        const kw = sIn.value.trim();
+        hits = []; hitAt = 0; sNote.innerHTML = "";
+        if (!kw) return;
+        const artKey = (kw.match(/^第?\s*(\d+(?:-\d+)?)\s*條?$/) || [])[1];
+        hits = activeIds.map((id, i) => [QUESTIONS.find(q => q.id === id), i]).filter(([q]) =>
+          artKey ? q.article.replace(/[第條\s]/g, "") === artKey
+                 : (q.question + (q.context || []).join("")).includes(kw)).map(([, i]) => i);
+        if (!hits.length) { sNote.textContent = artKey ? `找不到第 ${artKey} 條的題目` : `找不到含「${kw}」的題目`; return; }
+        current = hits[0]; render(); showHits();
+      }
+      function showHits(){
+        const kw = sIn.value.trim(), artKey = (kw.match(/^第?\s*(\d+(?:-\d+)?)\s*條?$/) || [])[1];
+        const label = artKey ? `第 ${artKey} 條` : `「${kw}」`;
+        const list = hits.map(i => i + 1);
+        const range = list.length > 1 && list[list.length-1] - list[0] === list.length - 1 ? `第 ${list[0]}～${list[list.length-1]} 題` : `第 ${list.join("、")} 題`;
+        sNote.innerHTML = `<span style="color:#126c67">${label}共 ${hits.length} 題（${range}）</span>` +
+          (hits.length > 1 ? ` <button type="button" id="nextHit" style="border:1px solid #126c67;background:#fff;color:#126c67;border-radius:999px;padding:1px 10px;font-size:12px;min-height:26px">下一個符合 ▸</button>` : "");
+        const nb = document.getElementById("nextHit");
+        if (nb) nb.onclick = () => { hitAt = (hitAt + 1) % hits.length; current = hits[hitAt]; render(); };
+      }
       sIn.addEventListener("input", () => {
         sClr.hidden = !sIn.value;
-        clearTimeout(sT); sT = setTimeout(() => { current = 0; rebuildActiveIds(); render(); }, 350);
+        clearTimeout(sT); sT = setTimeout(doSearch, 400);
       });
-      sIn.addEventListener("keydown", e => { if (e.key === "Enter") sIn.blur(); });
-      sClr.onclick = () => { sIn.value = ""; sClr.hidden = true; current = 0; rebuildActiveIds(); render(); };
+      sIn.addEventListener("keydown", e => { if (e.key === "Enter") { clearTimeout(sT); doSearch(); sIn.blur(); } });
+      sClr.onclick = () => { sIn.value = ""; sClr.hidden = true; hits = []; sNote.innerHTML = ""; };
       document.getElementById("mode").onchange = () => { current = 0; rebuildActiveIds(); render(); };
       document.getElementById("order").onchange = () => { current = 0; rebuildActiveIds(); render(); };
     }
@@ -513,13 +535,8 @@
     function rebuildActiveIds() {
       const mode = document.getElementById("mode").value;
       const chap = document.getElementById("chapter").value;
-      const kw = document.getElementById("search").value.trim();
-      // 純數字（可含 -）或「第48條」→ 找條號；其他文字 → 找題目與條文內容
-      const artKey = (kw.match(/^第?\s*(\d+(?:-\d+)?)\s*條?$/) || [])[1];
       activeIds = QUESTIONS.filter(q => {
         if (chap && q.chapter !== chap) return false;
-        if (artKey && q.article.replace(/[第條\s]/g, "") !== artKey) return false;
-        if (kw && !artKey && !(q.question + (q.context || []).join("")).includes(kw)) return false;
         const result = state.results[q.id];
         if (mode === "wrong") return result && result.correct < q.answers.length;
         if (mode === "unanswered") return !result;
@@ -528,12 +545,7 @@
       if (document.getElementById("order").value === "shuffle") {
         activeIds = shuffle(activeIds);
       }
-      const note = document.getElementById("searchNote");
-      note.textContent = "";
-      if (activeIds.length === 0) {
-        if (kw) note.textContent = artKey ? `找不到第 ${artKey} 條的題目，目前顯示全部題目。` : `找不到含「${kw}」的題目，目前顯示全部題目。`;
-        activeIds = QUESTIONS.map(q => q.id);
-      }
+      if (activeIds.length === 0) activeIds = QUESTIONS.map(q => q.id);
       current = Math.min(current, activeIds.length - 1);
     }
 
