@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>危險性工作場所審查及檢查辦法 填充測驗</title>
+  <meta name="theme-color" content="#126c67">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="安衛填充測驗">
+  <link rel="manifest" href="dwp.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1d252f;
+      --muted: #607083;
+      --line: #d9e1ea;
+      --bg: #f6f8fb;
+      --panel: #ffffff;
+      --primary: #126c67;
+      --primary-ink: #ffffff;
+      --accent: #b03a2e;
+      --ok: #1f7a4d;
+      --bad: #b3261e;
+      --warn: #8a5a00;
+      --shadow: 0 10px 30px rgba(21, 37, 51, .08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+      font-size: calc(16px * var(--fs, 1));
+    }
+
+    button, input, select { font: inherit; }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 14px;
+      min-height: calc(46px * var(--fs, 1));
+      background: #e9eef4;
+      color: var(--ink);
+      font-weight: 700;
+    }
+    button.primary { background: var(--primary); color: var(--primary-ink); }
+    button.warn { background: #fff3d6; color: var(--warn); }
+    button.ghost { background: transparent; border: 1px solid var(--line); }
+    button:disabled { opacity: .45; }
+
+    .app {
+      min-height: 100dvh;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: rgba(246, 248, 251, .94);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+      padding: 12px 14px 10px;
+    }
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: space-between;
+    }
+    h1 {
+      margin: 0;
+      font-size: calc(18px * var(--fs, 1));
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+    .status-pill {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: #e8f4f2;
+      color: #07534f;
+      padding: 6px 10px;
+      font-size: calc(13px * var(--fs, 1));
+      font-weight: 800;
+    }
+    .progress {
+      margin-top: 10px;
+      height: 8px;
+      border-radius: 999px;
+      background: #dfe6ee;
+      overflow: hidden;
+    }
+    .progress > div {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #126c67, #5a7f2f);
+    }
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    .toolbar select {
+      width: 100%;
+      min-height: calc(44px * var(--fs, 1));
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 10px;
+      background: #fff;
+      color: var(--ink);
+    }
+    main {
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: calc(13px * var(--fs, 1));
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .question {
+      font-size: calc(18px * var(--fs, 1));
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .answers {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .answer-row {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      align-items: center;
+      gap: 10px;
+    }
+    .answer-row label {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: #eef4f7;
+      color: var(--muted);
+      font-weight: 800;
+    }
+    .answer-row input {
+      width: 100%;
+      min-height: calc(48px * var(--fs, 1));
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 12px;
+      background: #fff;
+      color: var(--ink);
+      font-size: calc(18px * var(--fs, 1));
+    }
+    .answer-row.correct input { border-color: rgba(31, 122, 77, .7); background: #f0faf5; }
+    .answer-row.wrong input { border-color: rgba(179, 38, 30, .7); background: #fff4f3; }
+    .feedback {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #f0f4f8;
+      color: var(--muted);
+      font-weight: 700;
+      min-height: calc(48px * var(--fs, 1));
+    }
+    .feedback.ok { background: #edf8f2; color: var(--ok); }
+    .feedback.bad { background: #fff1ef; color: var(--bad); }
+    .footer {
+      position: sticky;
+      bottom: 0;
+      z-index: 4;
+      border-top: 1px solid var(--line);
+      background: rgba(255,255,255,.96);
+      backdrop-filter: blur(14px);
+      padding: 10px 14px max(10px, env(safe-area-inset-bottom));
+    }
+    .actions {
+      max-width: 780px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fff;
+    }
+    .stat b { display: block; font-size: calc(22px * var(--fs, 1)); line-height: 1.2; }
+    .stat span { color: var(--muted); font-size: calc(12px * var(--fs, 1)); font-weight: 700; }
+    .locked {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: var(--bg);
+    }
+    .locked .panel {
+      width: min(100%, 480px);
+    }
+    .locked input {
+      width: 100%;
+      min-height: calc(48px * var(--fs, 1));
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 12px;
+      margin: 12px 0;
+    }
+    input { font-size: max(var(--inmin, 16px), calc(17px * var(--fs, 1))) !important; }
+    .font-btn {
+      min-height: 32px;
+      padding: 4px 10px;
+      font-size: 13px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid var(--line);
+      white-space: nowrap;
+    }
+    .title-tools { display: flex; gap: 6px; align-items: center; }
+    .blank {
+      display: inline-block;
+      margin: 0 2px;
+      padding: 0 6px;
+      border-radius: 6px;
+      background: #fff3d6;
+      color: var(--accent);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .blank b { display: inline-block; min-width: 2.2em; text-align: center; border-bottom: 2px solid var(--accent); }
+    .q-head { display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 8px; }
+    .q-head span { font-size: calc(12px * var(--fs, 1)); font-weight:700; padding:2px 8px; border-radius:999px; background:#e8f1f0; color:#126c67; }
+    .q-head span.art { background:#fff3d6; color:#8a5a00; }
+    .q-ctx { margin:0 0 8px; padding:8px 10px; border-left:3px solid #c9d4dc; background:#f6f8fa; color:#5c6b78; border-radius:0 6px 6px 0; font-size: calc(14px * var(--fs, 1)); line-height:1.6; }
+    .q-ctx p { margin:0; }
+    .q-ctx p + p { margin-top:4px; }
+    .q-ctx:empty { display:none; }
+    .toolbar #chapter { grid-column: 1 / -1; }
+    .search { grid-column: 1 / -1; position: relative; }
+    .search input { width: 100%; min-height: calc(40px * var(--fs, 1)); border: 1px solid var(--line); border-radius: 8px; padding: 0 36px 0 34px; background: #fff; color: var(--ink); font-size: max(16px, calc(15px * var(--fs, 1))) !important; }
+    .search::before { content: "🔍"; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: .6; }
+    .search button { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); border: 0; background: none; font-size: 18px; color: #6b7785; min-height: 32px; padding: 0 8px; }
+    .search input::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
+    .search-note { grid-column: 1 / -1; margin: -2px 0 0; font-size: 12px; color: #b3261e; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .search-note:empty { display: none; }
+    .hidden { display: none !important; }
+    /* 底部按鈕：兩列 */
+    .footer { padding: 6px 10px max(6px, env(safe-area-inset-bottom)); }
+    .actions {
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-areas: "prev prev grade grade next next" "show show show reset reset reset";
+      gap: 6px;
+    }
+    .actions button { min-height: 40px; padding: 6px 8px; }
+    #prevBtn { grid-area: prev; }
+    #gradeBtn { grid-area: grade; }
+    #nextBtn { grid-area: next; }
+    #showBtn { grid-area: show; }
+    #resetBtn { grid-area: reset; }
+    body.typing #showBtn, body.typing #resetBtn { display: none; }
+    @media (max-width: 430px) {
+      .summary { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .stat { padding: 6px 8px; }
+      main { padding: 10px; }
+      .panel { padding: 12px; }
+      header { padding: 8px 12px 8px; }
+      .toolbar { padding: 8px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <section id="locked" class="locked hidden">
+    <div class="panel">
+      <h1>危險性工作場所審查及檢查辦法</h1>
+      <p id="lockMessage"></p>
+      <input id="accessCode" inputmode="numeric" autocomplete="one-time-code" placeholder="輸入授權碼">
+      <button id="unlockBtn" class="primary">啟用</button>
+    </div>
+  </section>
+
+  <section id="app" class="app hidden">
+    <header>
+      <div class="title-row">
+        <h1>危險性工作場所審查及檢查辦法</h1>
+        <div class="title-tools">
+          <button id="fontBtn" class="font-btn" type="button">字級</button>
+          <div id="scorePill" class="status-pill">0 / 0</div>
+        </div>
+      </div>
+      <div class="progress"><div id="progressBar"></div></div>
+      <div id="verLine" style="margin-top:4px;font-size:11px;color:#6b7785;text-align:right"></div>
+    </header>
+    <div class="toolbar">
+      <select id="chapter"><option value="">全部章節</option></select>
+      <select id="mode">
+        <option value="all">全部題目</option>
+        <option value="wrong">錯題重練</option>
+        <option value="unanswered">未作答</option>
+      </select>
+      <select id="order">
+        <option value="normal">依原順序</option>
+        <option value="shuffle">隨機順序</option>
+      </select>
+      <div class="search">
+        <input id="search" type="search" placeholder="搜尋條號或關鍵字，例如 17 或 丁類" autocomplete="off" enterkeyhint="search">
+        <button id="searchClear" type="button" aria-label="清除搜尋" hidden>×</button>
+      </div>
+      <p id="searchNote" class="search-note"></p>
+    </div>
+    <main>
+      <section class="panel">
+        <div class="meta">
+          <span id="counter"></span>
+          <span id="slotCount"></span>
+          <span id="sourceRow"></span>
+        </div>
+        <div id="qHead" class="q-head"></div>
+        <div id="qCtx" class="q-ctx"></div>
+        <div id="question" class="question"></div>
+        <div id="answers" class="answers"></div>
+        <div id="feedback" class="feedback">填完後按「判分」。</div>
+        <div class="summary">
+          <div class="stat"><b id="answeredStat">0</b><span>已判分題目</span></div>
+          <div class="stat"><b id="correctStat">0</b><span>答對填空</span></div>
+          <div class="stat"><b id="wrongStat">0</b><span>答錯填空</span></div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <div class="actions">
+        <button id="prevBtn" class="ghost">上一題</button>
+        <button id="nextBtn" class="ghost">下一題</button>
+        <button id="gradeBtn" class="primary">判分</button>
+        <button id="showBtn" class="warn">看答案</button>
+        <button id="resetBtn">重來</button>
+      </div>
+    </footer>
+  </section>
+
+  <script>
+    const CONFIG = {
+      expiryDate: "2027-12-31",
+      accessCode: "114196",
+      requireAccessCode: false
+    };
+    const QUESTIONS = [{"id": 1, "chapter": "第一章 總則", "article": "第 2 條", "context": ["本法第二十六條第一項規定之危險性工作場所分類如下："], "question": "三、丙類：指蒸汽鍋爐之傳熱面積在( )平方公尺以上，或高壓氣體類壓力容器一日之冷凍能力在( )公噸以上或處理能力符合下列規定之一者：\n（一）( )立方公尺以上之氧氣、有毒性及可燃性高壓氣體。\n（二）( )立方公尺以上之前款以外之高壓氣體。", "answers": ["500", "150", "1000", "5000"], "points": 4, "sourceRow": 0}, {"id": 2, "chapter": "第一章 總則", "article": "第 2 條", "context": ["本法第二十六條第一項規定之危險性工作場所分類如下：", "四、丁類：指下列之營造工程："], "question": "（一）建築物高度在( )公尺以上之建築工程。\n（二）單跨橋梁之橋墩跨距在( )公尺以上或多跨橋梁之橋墩跨距在( )公尺以上之橋梁工程。\n（三）採用壓氣施工作業之工程。", "answers": ["80", "75", "50"], "points": 3, "sourceRow": 0}, {"id": 3, "chapter": "第一章 總則", "article": "第 2 條", "context": ["本法第二十六條第一項規定之危險性工作場所分類如下：", "四、丁類：指下列之營造工程："], "question": "（四）長度( )公尺以上或需開挖( )公尺以上豎坑之隧道工程。\n（五）開挖深度達( )公尺以上，且開挖面積達( )平方公尺之工程。", "answers": ["1000", "15", "18", "500"], "points": 4, "sourceRow": 0}, {"id": 4, "chapter": "第一章 總則", "article": "第 2 條", "context": ["本法第二十六條第一項規定之危險性工作場所分類如下：", "四、丁類：指下列之營造工程："], "question": "（六）工程中模板支撐高度( )公尺以上，且面積達( )平方公尺以上者。\n五、其他經中央主管機關指定公告者。", "answers": ["7", "330"], "points": 2, "sourceRow": 0}, {"id": 5, "chapter": "第一章 總則", "article": "第 3 條", "context": ["本辦法用詞，定義如下："], "question": "二、液化石油氣：指混合( )個碳及( )個碳之碳氫化合物為主要成分之碳氫化合物。", "answers": ["3", "4"], "points": 2, "sourceRow": 0}, {"id": 6, "chapter": "第一章 總則", "article": "第 4 條", "context": [], "question": "事業單位應於甲類工作場所、丁類工作場所使勞工作業( )日前，向當地勞動檢查機構（以下簡稱檢查機構）申請審查。\n事業單位應於乙類工作場所、丙類工作場所使勞工作業( )日前，向檢查機構申請審查及檢查。", "answers": ["30", "45"], "points": 2, "sourceRow": 0}, {"id": 7, "chapter": "第二章 甲類工作場所之審查及檢查", "article": "第 5 條", "context": [], "question": "事業單位向檢查機構申請審查甲類工作場所，應填具申請書（如格式一），並檢附下列資料各( )份：\n一、安全衛生管理基本資料，如附件一。\n二、製程安全評估定期實施辦法第四條所定附表一至附表十四。", "answers": ["3"], "points": 1, "sourceRow": 0}, {"id": 8, "chapter": "第二章 甲類工作場所之審查及檢查", "article": "第 7 條", "context": [], "question": "檢查機構對第五條之申請，應依其檢附之資料實施審查，並得就該工作場所之職業安全衛生設施及管理實施檢查。\n審查之結果，檢查機構應於受理申請後( )日內，以書面通知事業單位。但可歸責於事業單位者，不在此限。", "answers": ["30"], "points": 1, "sourceRow": 0}, {"id": 9, "chapter": "第二章 甲類工作場所之審查及檢查", "article": "第 8 條", "context": [], "question": "事業單位對經檢查機構審查合格之工作場所，應於製程修改時或至少每( )年重新評估第五條檢附之資料，為必要之更新及記錄，並報請檢查機構備查。", "answers": ["5"], "points": 1, "sourceRow": 0}, {"id": 10, "chapter": "第三章 乙類工作場所之審查及檢查", "article": "第 9 條", "context": [], "question": "事業單位向檢查機構申請審查及檢查乙類工作場所，應填具申請書（如格式二），並檢附下列資料各( )份：\n一、安全衛生管理基本資料。\n二、製程安全評估報告書。\n三、製程修改安全計畫。\n四、緊急應變計畫。\n五、稽核管理計畫。", "answers": ["3"], "points": 1, "sourceRow": 0}, {"id": 11, "chapter": "第三章 乙類工作場所之審查及檢查", "article": "第 11 條", "context": ["檢查機構對第九條之申請，應依同條檢附之資料，實施審查。", "檢查機構於審查後，應對下列設施實施檢查：一、火災爆炸危害預防設施。二、有害物洩漏及中毒危害預防設施。"], "question": "審查及檢查之結果，檢查機構應於受理申請後( )日內，以書面通知事業單位。但可歸責於事業單位者，不在此限。", "answers": ["45"], "points": 1, "sourceRow": 0}, {"id": 12, "chapter": "第三章 乙類工作場所之審查及檢查", "article": "第 12 條", "context": [], "question": "事業單位對經檢查機構審查及檢查合格之工作場所，應於製程修改時或至少每( )年依第九條檢附之資料重新評估一次，為必要之更新並記錄之。", "answers": ["5"], "points": 1, "sourceRow": 0}, {"id": 13, "chapter": "第四章 丙類工作場所之審查及檢查", "article": "第 13 條", "context": [], "question": "事業單位向檢查機構申請審查及檢查丙類工作場所，應填具申請書（如格式三），並檢附第九條各款規定之應審查資料各( )份。", "answers": ["3"], "points": 1, "sourceRow": 0}, {"id": 14, "chapter": "第四章 丙類工作場所之審查及檢查", "article": "第 15 條", "context": ["檢查機構對第十三條之申請，應依同條檢附之資料，實施審查。", "檢查機構於審查後，應對下列設施實施檢查：一般高壓氣體、液化石油氣、冷凍用高壓氣體、加氣站製造設施及鍋爐設施。"], "question": "審查及檢查之結果，檢查機構應於受理申請後( )日內，以書面通知事業單位。但可歸責於事業單位者，不在此限。", "answers": ["45"], "points": 1, "sourceRow": 0}, {"id": 15, "chapter": "第四章 丙類工作場所之審查及檢查", "article": "第 16 條", "context": [], "question": "事業單位對經檢查機構審查及檢查合格之工作場所，應於製程修改時或至少每( )年依第十三條檢附之資料重新評估一次，為必要之更新並記錄之。", "answers": ["5"], "points": 1, "sourceRow": 0}, {"id": 16, "chapter": "第五章 丁類工作場所之審查", "article": "第 17 條", "context": [], "question": "事業單位向檢查機構申請審查丁類工作場所，應填具申請書（如格式四），並檢附施工安全評估人員及其所僱之專任工程人員、相關執業技師或開業建築師之簽章文件，及下列資料各( )份︰\n一、施工計畫書。\n二、施工安全評估報告書。", "answers": ["3"], "points": 1, "sourceRow": 0}, {"id": 17, "chapter": "第五章 丁類工作場所之審查", "article": "第 19 條", "context": [], "question": "第十七條之審查，檢查機構認有必要時，得前往該工作場所實施檢查。\n第十七條審查之結果，檢查機構應於受理申請後( )日內，以書面通知事業單位。但可歸責於事業單位者，不在此限。", "answers": ["30"], "points": 1, "sourceRow": 0}];
+    const STORAGE_KEY = "dwp-fill-exam-v1";
+    let state = loadState();
+    let activeIds = QUESTIONS.map(q => q.id);
+    let current = 0;
+    let appBound = false;
+
+    // 清掉已刪除題目（重複題）的舊作答紀錄，避免統計數字偏差
+    (function pruneState() {
+      const valid = new Set(QUESTIONS.map(q => String(q.id)));
+      ["answers", "results"].forEach(key => {
+        Object.keys(state[key] || {}).forEach(id => {
+          if (!valid.has(String(id))) delete state[key][id];
+        });
+      });
+    })();
+
+    // 把題目裡的 ( ) 換成醒目的編號空格（　１　），對應下方答案欄
+    function formatBlanks(text) {
+      const esc = String(text).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      let n = 0;
+      return esc.replace(/[（(]\s*[)）]/g, () => `<span class="blank">（<b>${++n}</b>）</span>`);
+    }
+
+    function todayIso() {
+      const now = new Date();
+      const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+      return local.toISOString().slice(0, 10);
+    }
+
+    // 國字數字（如 三十、一百五十、五千）轉成阿拉伯數字，兩種寫法都算對
+    function cn2num(t) {
+      const D = { 零:0, 〇:0, 一:1, 二:2, 兩:2, 三:3, 四:4, 五:5, 六:6, 七:7, 八:8, 九:9 }, U = { 十:10, 百:100, 千:1000 };
+      if (!/^[零〇一二兩三四五六七八九十百千萬]+$/.test(t)) return t;
+      let total = 0, sec = 0, num = 0;
+      for (const c of t) {
+        if (c in D) num = D[c];
+        else if (c in U) { sec += (num || 1) * U[c]; num = 0; }
+        else if (c === "萬") { total += (sec + num) * 10000; sec = 0; num = 0; }
+      }
+      return String(total + sec + num);
+    }
+    function normalize(v) {
+      return cn2num(String(v || "").trim().replace(/\s+/g, ""))
+        .trim()
+        .replace(/\s+/g, "")
+        .replace(/：/g, ":")
+        .replace(/／/g, "/")
+        .replace(/．/g, ".")
+        .replace(/[０-９]/g, d => String.fromCharCode(d.charCodeAt(0) - 65248));
+    }
+
+    function loadState() {
+      try {
+        const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (s && typeof s === "object") {
+          return { answers: s.answers || {}, results: s.results || {}, unlocked: !!s.unlocked };
+        }
+      } catch {}
+      return { answers: {}, results: {}, unlocked: false };
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch {}
+    }
+
+    function isExpired() {
+      return todayIso() > CONFIG.expiryDate;
+    }
+
+    const APP_VERSION = "2026.11.05";
+    document.getElementById("verLine").textContent = `版本 ${APP_VERSION}｜使用期限 ${CONFIG.expiryDate}`;
+
+    function boot() {
+      if (isExpired()) {
+        showLocked(`使用期限已到期：${CONFIG.expiryDate}`, false);
+        return;
+      }
+      if (CONFIG.requireAccessCode && !state.unlocked) {
+        showLocked(`請輸入授權碼。使用期限：${CONFIG.expiryDate}`, true);
+        return;
+      }
+      document.getElementById("locked").classList.add("hidden");
+      document.getElementById("app").classList.remove("hidden");
+      if (!appBound) {
+        bind();
+        appBound = true;
+      }
+      rebuildActiveIds();
+      render();
+    }
+
+    function showLocked(message, allowUnlock) {
+      document.getElementById("lockMessage").textContent = message;
+      document.getElementById("accessCode").classList.toggle("hidden", !allowUnlock);
+      document.getElementById("unlockBtn").classList.toggle("hidden", !allowUnlock);
+      document.getElementById("locked").classList.remove("hidden");
+      document.getElementById("app").classList.add("hidden");
+    }
+
+    // 授權碼按鈕在鎖定畫面就要能用，所以獨立綁定，不放在 bind() 裡
+    function tryUnlock() {
+      if (document.getElementById("accessCode").value.trim() === CONFIG.accessCode) {
+        state.unlocked = true;
+        saveState();
+        boot();
+      } else {
+        document.getElementById("lockMessage").textContent = "授權碼不正確。";
+      }
+    }
+    document.getElementById("unlockBtn").onclick = tryUnlock;
+    document.getElementById("accessCode").addEventListener("keydown", e => {
+      if (e.key === "Enter") tryUnlock();
+    });
+
+    function bind() {
+      document.getElementById("prevBtn").onclick = () => { current = Math.max(0, current - 1); render(); };
+      document.getElementById("nextBtn").onclick = () => { current = Math.min(activeIds.length - 1, current + 1); render(); };
+      document.getElementById("gradeBtn").onclick = gradeCurrent;
+      document.getElementById("showBtn").onclick = showAnswers;
+      document.getElementById("resetBtn").onclick = resetAll;
+      const chapSel = document.getElementById("chapter");
+      [...new Set(QUESTIONS.map(q => q.chapter))].forEach(c => {
+        const n = QUESTIONS.filter(q => q.chapter === c).length;
+        chapSel.add(new Option(`${c}（${n} 題）`, c));
+      });
+      chapSel.onchange = () => { current = 0; rebuildActiveIds(); render(); document.getElementById("searchClear").click(); };
+      const sIn = document.getElementById("search"), sClr = document.getElementById("searchClear"), sNote = document.getElementById("searchNote");
+      let sT, hits = [], hitAt = 0;
+      // 搜尋＝跳到符合的題目；上一題、下一題仍可在全部題目間移動
+      function doSearch(){
+        const kw = sIn.value.trim();
+        hits = []; hitAt = 0; sNote.innerHTML = "";
+        if (!kw) return;
+        const artKey = (kw.match(/^第?\s*(\d+(?:-\d+)?)\s*條?$/) || [])[1];
+        hits = activeIds.map((id, i) => [QUESTIONS.find(q => q.id === id), i]).filter(([q]) =>
+          artKey ? q.article.replace(/[第條\s]/g, "") === artKey
+                 : (q.question + (q.context || []).join("")).includes(kw)).map(([, i]) => i);
+        if (!hits.length) { sNote.textContent = artKey ? `找不到第 ${artKey} 條的題目` : `找不到含「${kw}」的題目`; return; }
+        current = hits[0]; render(); showHits();
+      }
+      function showHits(){
+        const kw = sIn.value.trim(), artKey = (kw.match(/^第?\s*(\d+(?:-\d+)?)\s*條?$/) || [])[1];
+        const label = artKey ? `第 ${artKey} 條` : `「${kw}」`;
+        const list = hits.map(i => i + 1);
+        const range = list.length > 1 && list[list.length-1] - list[0] === list.length - 1 ? `第 ${list[0]}～${list[list.length-1]} 題` : `第 ${list.join("、")} 題`;
+        sNote.innerHTML = `<span style="color:#126c67">${label}共 ${hits.length} 題（${range}）</span>` +
+          (hits.length > 1 ? ` <button type="button" id="nextHit" style="border:1px solid #126c67;background:#fff;color:#126c67;border-radius:999px;padding:1px 10px;font-size:12px;min-height:26px">下一個符合 ▸</button>` : "");
+        const nb = document.getElementById("nextHit");
+        if (nb) nb.onclick = () => { hitAt = (hitAt + 1) % hits.length; current = hits[hitAt]; render(); };
+      }
+      sIn.addEventListener("input", () => {
+        sClr.hidden = !sIn.value;
+        clearTimeout(sT); sT = setTimeout(doSearch, 400);
+      });
+      sIn.addEventListener("keydown", e => { if (e.key === "Enter") { clearTimeout(sT); doSearch(); sIn.blur(); } });
+      sClr.onclick = () => { sIn.value = ""; sClr.hidden = true; hits = []; sNote.innerHTML = ""; };
+      document.getElementById("mode").onchange = () => { current = 0; rebuildActiveIds(); render(); };
+      document.getElementById("order").onchange = () => { current = 0; rebuildActiveIds(); render(); };
+    }
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function rebuildActiveIds() {
+      const mode = document.getElementById("mode").value;
+      const chap = document.getElementById("chapter").value;
+      activeIds = QUESTIONS.filter(q => {
+        if (chap && q.chapter !== chap) return false;
+        const result = state.results[q.id];
+        if (mode === "wrong") return result && result.correct < q.answers.length;
+        if (mode === "unanswered") return !result;
+        return true;
+      }).map(q => q.id);
+      if (document.getElementById("order").value === "shuffle") {
+        activeIds = shuffle(activeIds);
+      }
+      if (activeIds.length === 0) activeIds = QUESTIONS.map(q => q.id);
+      current = Math.min(current, activeIds.length - 1);
+    }
+
+    function currentQuestion() {
+      return QUESTIONS.find(q => q.id === activeIds[current]);
+    }
+
+    function render() {
+      const q = currentQuestion();
+      document.getElementById("counter").textContent = `第 ${current + 1} / ${activeIds.length} 題`;
+      document.getElementById("slotCount").textContent = `${q.answers.length} 個填空`;
+      document.getElementById("sourceRow").textContent = q.sourceRow ? `原 Excel 第 ${q.sourceRow} 列` : "";
+      const escT = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      document.getElementById("qHead").innerHTML = `<span>${escT(q.chapter)}</span><span class="art">${escT(q.article)}</span>`;
+      document.getElementById("qCtx").innerHTML = (q.context || []).map(t => `<p>${escT(t).replace(/[（(]\s*[)）]/g, "（　　）")}</p>`).join("");
+      document.getElementById("question").innerHTML = formatBlanks(q.question);
+      const saved = state.answers[q.id] || [];
+      const result = state.results[q.id];
+      const answers = document.getElementById("answers");
+      answers.innerHTML = "";
+      q.answers.forEach((_, i) => {
+        const row = document.createElement("div");
+        row.className = "answer-row";
+        if (result) row.classList.add(result.items[i] ? "correct" : "wrong");
+        const label = document.createElement("label");
+        label.textContent = i + 1;
+        const input = document.createElement("input");
+        // 用 text 而非 decimal：部分答案含「:」「/」（如 2:3、1/2），iOS 數字鍵盤打不出來
+        input.type = "text";
+        input.inputMode = "text";
+        input.autocomplete = "off";
+        input.autocapitalize = "off";
+        input.spellcheck = false;
+        input.value = saved[i] || "";
+        input.placeholder = "輸入答案";
+        input.oninput = () => {
+          state.answers[q.id] = [...document.querySelectorAll(".answer-row input")].map(el => el.value);
+          delete state.results[q.id];
+          saveState();
+          renderStats();
+        };
+        input.onkeydown = e => {
+          if (e.key !== "Enter") return;
+          const inputs = [...document.querySelectorAll(".answer-row input")];
+          const idx = inputs.indexOf(input);
+          if (idx < inputs.length - 1) inputs[idx + 1].focus();
+          else gradeCurrent();
+        };
+        row.append(label, input);
+        answers.appendChild(row);
+      });
+      renderFeedback(q, result);
+      renderStats();
+      document.getElementById("prevBtn").disabled = current === 0;
+      document.getElementById("nextBtn").disabled = current === activeIds.length - 1;
+    }
+
+    function renderFeedback(q, result) {
+      const box = document.getElementById("feedback");
+      box.className = "feedback";
+      if (!result) {
+        box.textContent = "填完後按「判分」。";
+        return;
+      }
+      if (result.correct === q.answers.length) {
+        box.classList.add("ok");
+        box.textContent = `全對，得到 ${result.correct} 分。`;
+      } else {
+        box.classList.add("bad");
+        box.textContent = `答對 ${result.correct} / ${q.answers.length}。正確答案：${q.answers.join("、")}`;
+      }
+    }
+
+    function renderStats() {
+      let answered = 0;
+      let correct = 0;
+      let wrong = 0;
+      let total = 0;
+      QUESTIONS.forEach(q => {
+        total += q.answers.length;
+        const r = state.results[q.id];
+        if (r) {
+          answered += 1;
+          correct += r.correct;
+          wrong += r.total - r.correct;
+        }
+      });
+      document.getElementById("scorePill").textContent = `${correct} / ${total}`;
+      document.getElementById("answeredStat").textContent = answered;
+      document.getElementById("correctStat").textContent = correct;
+      document.getElementById("wrongStat").textContent = wrong;
+      document.getElementById("progressBar").style.width = `${Math.round((answered / QUESTIONS.length) * 100)}%`;
+    }
+
+    function gradeCurrent() {
+      const q = currentQuestion();
+      const user = [...document.querySelectorAll(".answer-row input")].map(el => el.value);
+      const items = q.answers.map((answer, i) => normalize(user[i]) === normalize(answer));
+      state.answers[q.id] = user;
+      state.results[q.id] = {
+        items,
+        correct: items.filter(Boolean).length,
+        total: q.answers.length
+      };
+      saveState();
+      render();
+    }
+
+    function showAnswers() {
+      const q = currentQuestion();
+      [...document.querySelectorAll(".answer-row input")].forEach((input, i) => {
+        input.value = q.answers[i];
+      });
+      state.answers[q.id] = [...q.answers];
+      saveState();
+    }
+
+    function resetAll() {
+      if (!confirm("清除目前作答紀錄？")) return;
+      state = { answers: {}, results: {}, unlocked: state.unlocked };
+      saveState();
+      current = 0;
+      rebuildActiveIds();
+      render();
+    }
+
+    // 字級切換：小 / 中 / 大，記住使用者選擇
+    (function fontSize() {
+      const LEVELS = [{ name: "極小", v: 0.6 }, { name: "特小", v: 0.72 }, { name: "小", v: 0.85 }, { name: "中", v: 1 }, { name: "大", v: 1.15 }];
+      const KEY = "construction-fill-exam-font3";
+      let idx;
+      try { idx = parseInt(localStorage.getItem(KEY), 10); } catch {}
+      if (!(idx >= 0 && idx < LEVELS.length)) idx = window.innerWidth <= 430 ? 1 : 3;
+      const btn = document.getElementById("fontBtn");
+      // 偵測手機系統把字放大了多少倍，自動抵消
+      function systemBoost() {
+        try {
+          const t = document.createElement("span");
+          t.textContent = "國";
+          t.style.cssText = "position:absolute;visibility:hidden;font-size:100px;line-height:1;white-space:nowrap;";
+          document.body.appendChild(t);
+          const w = t.getBoundingClientRect().width;
+          t.remove();
+          const k = w / 100;
+          return k > 1.05 && k < 4 ? k : 1;
+        } catch { return 1; }
+      }
+      const boost = systemBoost();
+      function apply() {
+        document.documentElement.style.setProperty("--fs", LEVELS[idx].v / boost);
+        document.documentElement.style.setProperty("--inmin", (16 / boost) + "px");
+        btn.textContent = "字級：" + LEVELS[idx].name;
+      }
+      btn.addEventListener("click", () => {
+        idx = (idx + 1) % LEVELS.length;
+        try { localStorage.setItem(KEY, idx); } catch {}
+        apply();
+      });
+      apply();
+    })();
+
+    // 打字時（鍵盤開啟）隱藏「看答案、重來」，讓題目有更多空間
+    document.addEventListener("focusin", e => {
+      if (e.target.matches("input")) document.body.classList.add("typing");
+    });
+    document.addEventListener("focusout", e => {
+      if (e.target.matches("input")) setTimeout(() => {
+        if (!document.activeElement || !document.activeElement.matches("input")) document.body.classList.remove("typing");
+      }, 50);
+    });
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./service-worker.js", { updateViaCache: "none" }).catch(() => {});
+    }
+    boot();
+  </script>
+</body>
+</html>
