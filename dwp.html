@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>危險性工作場所審查及檢查辦法 填充測驗</title>
+  <title>危險性工作場所安衛測驗</title>
   <meta name="theme-color" content="#126c67">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="安衛填充測驗">
   <link rel="manifest" href="dwp.webmanifest">
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" href="dwp-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="dwp-apple-touch-icon.png">
   <style>
     :root {
       color-scheme: light;
@@ -272,6 +272,50 @@
     .search input::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
     .search-note { grid-column: 1 / -1; margin: -2px 0 0; font-size: 12px; color: #b3261e; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
     .search-note:empty { display: none; }
+
+    /* 題型切換 */
+    .types { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; padding:8px 12px 0; background:#fff; }
+    .types button { min-height:38px; border:1px solid var(--line); border-radius:8px; background:#fff; font-weight:700; color:var(--muted); }
+    .types button[aria-pressed="true"] { background:#126c67; border-color:#126c67; color:#fff; }
+    body.alt .toolbar, body.alt main#fillMain, body.alt footer#fillFooter, body.alt #scorePill { display:none !important; }
+    #altMain { display:none; }
+    body.alt #altMain { display:block; }
+    .alt-panel h2 { margin:4px 0 4px; font-size:calc(17px * var(--fs,1)); }
+    .alt-hint { margin:0 0 10px; color:var(--muted); font-size:calc(13px * var(--fs,1)); }
+    .mgrid { display:grid; grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr); gap:8px; }
+    .mcol { display:grid; gap:8px; align-content:start; }
+    .mi { position:relative; text-align:left; border:1.5px solid var(--line); background:#fff; border-radius:8px; padding:8px 8px 8px 30px; min-height:44px; font-size:calc(14px * var(--fs,1)); line-height:1.45; color:var(--ink); }
+    .mi .tag { position:absolute; left:6px; top:8px; width:18px; height:18px; border-radius:50%; font-size:11px; font-weight:800; display:grid; place-items:center; background:#e9edf1; color:#7a8794; }
+    .mi.sel { border-color:#126c67; box-shadow:0 0 0 2px rgba(18,108,103,.25); }
+    .mi.ok { border-color:#23794a; background:#e3f2e8; }
+    .mi.bad { border-color:#b3261e; background:#fbe7e5; }
+    .mi .fix { display:block; margin-top:4px; font-size:12px; color:#23794a; font-weight:700; }
+    .olist { list-style:none; margin:0; padding:0; display:grid; gap:8px; }
+    .oi { display:grid; grid-template-columns:28px 1fr 40px; gap:6px; align-items:center; border:1.5px solid var(--line); border-radius:8px; padding:6px; background:#fff; font-size:calc(14px * var(--fs,1)); line-height:1.45; }
+    .oi .n { width:26px; height:26px; border-radius:50%; background:#126c67; color:#fff; display:grid; place-items:center; font-weight:800; font-size:13px; }
+    .oi .mv { display:grid; gap:4px; }
+    .oi .mv button { min-height:30px; border:1px solid var(--line); border-radius:6px; background:#f6f8fa; font-size:13px; padding:0; }
+    .oi.ok { border-color:#23794a; background:#e3f2e8; }
+    .oi.bad { border-color:#b3261e; background:#fbe7e5; }
+    .oi .fix { display:block; font-size:12px; color:#b3261e; font-weight:700; }
+    .cl { border:1.5px solid var(--line); border-radius:8px; padding:8px; background:#fff; }
+    .cl.ok { border-color:#23794a; background:#e3f2e8; } .cl.bad { border-color:#b3261e; background:#fbe7e5; }
+    .cl-t { font-size:calc(14px * var(--fs,1)); line-height:1.5; margin-bottom:6px; }
+    .cl-f { display:flex; flex-wrap:wrap; align-items:center; gap:4px 6px; margin-top:4px; }
+    .cl-n { font-size:12px; color:var(--muted); font-weight:700; min-width:4.5em; }
+    .cl-o { display:flex; flex-wrap:wrap; gap:4px; }
+    .chip { min-height:30px; padding:2px 9px; border:1px solid var(--line); border-radius:999px; background:#fff; font-size:calc(13px * var(--fs,1)); font-weight:600; color:var(--ink); }
+    .chip.on { background:#126c67; border-color:#126c67; color:#fff; }
+    .mopts { display:grid; gap:5px; }
+    .mopt { text-align:left; border:1.5px solid var(--line); border-radius:8px; background:#fff; padding:7px 9px; min-height:38px; font-size:calc(13.5px * var(--fs,1)); font-weight:500; line-height:1.45; color:var(--ink); }
+    .mopt.on { border-color:#126c67; background:#e8f1f0; font-weight:700; }
+    .mopt.right { border-color:#23794a; } .mopt.wrong { border-color:#b3261e; background:#fbe7e5; }
+    .mopt b { color:#23794a; } .mopt.wrong b { color:#b3261e; }
+    .cl .fix { font-size:12px; color:#b3261e; font-weight:700; }
+    .alt-actions { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+    .alt-actions button { min-height:42px; padding:6px 8px; }
+    .alt-fb { margin:12px 0; padding:10px 12px; border-radius:8px; background:#f1f4f7; font-weight:700; font-size:calc(14px * var(--fs,1)); }
+    .alt-fb.good { background:#e3f2e8; color:#23794a; } .alt-fb.bad { background:#fbe7e5; color:#b3261e; }
     .hidden { display: none !important; }
     /* 底部按鈕：兩列 */
     .footer { padding: 6px 10px max(6px, env(safe-area-inset-bottom)); }
@@ -300,7 +344,7 @@
 <body>
   <section id="locked" class="locked hidden">
     <div class="panel">
-      <h1>危險性工作場所審查及檢查辦法</h1>
+      <h1>危險性工作場所安衛測驗</h1>
       <p id="lockMessage"></p>
       <input id="accessCode" inputmode="numeric" autocomplete="one-time-code" placeholder="輸入授權碼">
       <button id="unlockBtn" class="primary">啟用</button>
@@ -310,7 +354,7 @@
   <section id="app" class="app hidden">
     <header>
       <div class="title-row">
-        <h1>危險性工作場所審查及檢查辦法</h1>
+        <h1>危險性工作場所安衛測驗</h1>
         <div class="title-tools">
           <button id="fontBtn" class="font-btn" type="button">字級</button>
           <div id="scorePill" class="status-pill">0 / 0</div>
@@ -319,6 +363,11 @@
       <div class="progress"><div id="progressBar"></div></div>
       <div id="verLine" style="margin-top:4px;font-size:11px;color:#6b7785;text-align:right"></div>
     </header>
+    <div class="types" role="tablist">
+      <button type="button" data-type="fill" aria-pressed="true">填充</button>
+      <button type="button" data-type="match" aria-pressed="false">連連看</button>
+      <button type="button" data-type="order" aria-pressed="false">排序</button>
+    </div>
     <div class="toolbar">
       <select id="chapter"><option value="">全部章節</option></select>
       <select id="mode">
@@ -331,12 +380,12 @@
         <option value="shuffle">隨機順序</option>
       </select>
       <div class="search">
-        <input id="search" type="search" placeholder="搜尋條號或關鍵字，例如 17 或 丁類" autocomplete="off" enterkeyhint="search">
+        <input id="search" type="search" placeholder="搜尋條號或關鍵字，例如 17 或 製程修改" autocomplete="off" enterkeyhint="search">
         <button id="searchClear" type="button" aria-label="清除搜尋" hidden>×</button>
       </div>
       <p id="searchNote" class="search-note"></p>
     </div>
-    <main>
+    <main id="fillMain">
       <section class="panel">
         <div class="meta">
           <span id="counter"></span>
@@ -355,7 +404,24 @@
         </div>
       </section>
     </main>
-    <footer class="footer">
+    <main id="altMain">
+      <section class="panel alt-panel">
+        <div class="meta"><span id="altCounter"></span><span id="altArt"></span></div>
+        <div id="altHead" class="q-head"></div>
+        <h2 id="altTitle"></h2>
+        <p id="altHint" class="alt-hint"></p>
+        <div id="altBody"></div>
+        <div id="altFb" class="alt-fb">作答後按「判分」。</div>
+        <div class="alt-actions">
+          <button id="altPrev" class="ghost" type="button">上一組</button>
+          <button id="altGrade" class="primary" type="button">判分</button>
+          <button id="altNext" class="ghost" type="button">下一組</button>
+          <button id="altShow" class="warn" type="button" style="grid-column:span 1">看答案</button>
+          <button id="altReset" type="button" style="grid-column:span 2">重來</button>
+        </div>
+      </section>
+    </main>
+    <footer class="footer" id="fillFooter">
       <div class="actions">
         <button id="prevBtn" class="ghost">上一題</button>
         <button id="nextBtn" class="ghost">下一題</button>
@@ -372,7 +438,7 @@
       accessCode: "114196",
       requireAccessCode: false
     };
-    const QUESTIONS = [{"id": 1, "chapter": "第一章 總則", "article": "第 2 條", "context": ["本法第二十六條第一項規定之危險性工作場所分類如下："], "question": "三、丙類：指蒸汽鍋爐之傳熱面積在( )平方公尺以上，或高壓氣體類壓力容器一日之冷凍能力在( )公噸以上或處理能力符合下列規定之一者：\n（一）( )立方公尺以上之氧氣、有毒性及可燃性高壓氣體。\n（二）( )立方公尺以上之前款以外之高壓氣體。", "answers": ["500", "150", "1000", "5000"], "points": 4, "sourceRow": 0}, {"id": 2, "chapter": "第一章 總則", "article": "第 2 條", "context": ["本法第二十六條第一項規定之危險性工作場所分類如下：", "四、丁類：指下列之營造工程："], "question": "（一）建築物高度在( )公尺以上之建築工程。\n（二）單跨橋梁之橋墩跨距在( )公尺以上或多跨橋梁之橋墩跨距在( )公尺以上之橋梁工程。\n（三）採用壓氣施工作業之工程。", "answers": ["80", "75", "50"], "points": 3, "sourceRow": 0}, {"id": 3, "chapter": "第一章 總則", "article": "第 2 條", "context": ["本法第二十六條第一項規定之危險性工作場所分類如下：", "四、丁類：指下列之營造工程："], "question": "（四）長度( )公尺以上或需開挖( )公尺以上豎坑之隧道工程。\n（五）開挖深度達( )公尺以上，且開挖面積達( )平方公尺之工程。", "answers": ["1000", "15", "18", "500"], "points": 4, "sourceRow": 0}, {"id": 4, "chapter": "第一章 總則", "article": "第 2 條", "context": ["本法第二十六條第一項規定之危險性工作場所分類如下：", "四、丁類：指下列之營造工程："], "question": "（六）工程中模板支撐高度( )公尺以上，且面積達( )平方公尺以上者。\n五、其他經中央主管機關指定公告者。", "answers": ["7", "330"], "points": 2, "sourceRow": 0}, {"id": 5, "chapter": "第一章 總則", "article": "第 3 條", "context": ["本辦法用詞，定義如下："], "question": "二、液化石油氣：指混合( )個碳及( )個碳之碳氫化合物為主要成分之碳氫化合物。", "answers": ["3", "4"], "points": 2, "sourceRow": 0}, {"id": 6, "chapter": "第一章 總則", "article": "第 4 條", "context": [], "question": "事業單位應於甲類工作場所、丁類工作場所使勞工作業( )日前，向當地勞動檢查機構（以下簡稱檢查機構）申請審查。\n事業單位應於乙類工作場所、丙類工作場所使勞工作業( )日前，向檢查機構申請審查及檢查。", "answers": ["30", "45"], "points": 2, "sourceRow": 0}, {"id": 7, "chapter": "第二章 甲類工作場所之審查及檢查", "article": "第 5 條", "context": [], "question": "事業單位向檢查機構申請審查甲類工作場所，應填具申請書（如格式一），並檢附下列資料各( )份：\n一、安全衛生管理基本資料，如附件一。\n二、製程安全評估定期實施辦法第四條所定附表一至附表十四。", "answers": ["3"], "points": 1, "sourceRow": 0}, {"id": 8, "chapter": "第二章 甲類工作場所之審查及檢查", "article": "第 7 條", "context": [], "question": "檢查機構對第五條之申請，應依其檢附之資料實施審查，並得就該工作場所之職業安全衛生設施及管理實施檢查。\n審查之結果，檢查機構應於受理申請後( )日內，以書面通知事業單位。但可歸責於事業單位者，不在此限。", "answers": ["30"], "points": 1, "sourceRow": 0}, {"id": 9, "chapter": "第二章 甲類工作場所之審查及檢查", "article": "第 8 條", "context": [], "question": "事業單位對經檢查機構審查合格之工作場所，應於製程修改時或至少每( )年重新評估第五條檢附之資料，為必要之更新及記錄，並報請檢查機構備查。", "answers": ["5"], "points": 1, "sourceRow": 0}, {"id": 10, "chapter": "第三章 乙類工作場所之審查及檢查", "article": "第 9 條", "context": [], "question": "事業單位向檢查機構申請審查及檢查乙類工作場所，應填具申請書（如格式二），並檢附下列資料各( )份：\n一、安全衛生管理基本資料。\n二、製程安全評估報告書。\n三、製程修改安全計畫。\n四、緊急應變計畫。\n五、稽核管理計畫。", "answers": ["3"], "points": 1, "sourceRow": 0}, {"id": 11, "chapter": "第三章 乙類工作場所之審查及檢查", "article": "第 11 條", "context": ["檢查機構對第九條之申請，應依同條檢附之資料，實施審查。", "檢查機構於審查後，應對下列設施實施檢查：一、火災爆炸危害預防設施。二、有害物洩漏及中毒危害預防設施。"], "question": "審查及檢查之結果，檢查機構應於受理申請後( )日內，以書面通知事業單位。但可歸責於事業單位者，不在此限。", "answers": ["45"], "points": 1, "sourceRow": 0}, {"id": 12, "chapter": "第三章 乙類工作場所之審查及檢查", "article": "第 12 條", "context": [], "question": "事業單位對經檢查機構審查及檢查合格之工作場所，應於製程修改時或至少每( )年依第九條檢附之資料重新評估一次，為必要之更新並記錄之。", "answers": ["5"], "points": 1, "sourceRow": 0}, {"id": 13, "chapter": "第四章 丙類工作場所之審查及檢查", "article": "第 13 條", "context": [], "question": "事業單位向檢查機構申請審查及檢查丙類工作場所，應填具申請書（如格式三），並檢附第九條各款規定之應審查資料各( )份。", "answers": ["3"], "points": 1, "sourceRow": 0}, {"id": 14, "chapter": "第四章 丙類工作場所之審查及檢查", "article": "第 15 條", "context": ["檢查機構對第十三條之申請，應依同條檢附之資料，實施審查。", "檢查機構於審查後，應對下列設施實施檢查：一般高壓氣體、液化石油氣、冷凍用高壓氣體、加氣站製造設施及鍋爐設施。"], "question": "審查及檢查之結果，檢查機構應於受理申請後( )日內，以書面通知事業單位。但可歸責於事業單位者，不在此限。", "answers": ["45"], "points": 1, "sourceRow": 0}, {"id": 15, "chapter": "第四章 丙類工作場所之審查及檢查", "article": "第 16 條", "context": [], "question": "事業單位對經檢查機構審查及檢查合格之工作場所，應於製程修改時或至少每( )年依第十三條檢附之資料重新評估一次，為必要之更新並記錄之。", "answers": ["5"], "points": 1, "sourceRow": 0}, {"id": 16, "chapter": "第五章 丁類工作場所之審查", "article": "第 17 條", "context": [], "question": "事業單位向檢查機構申請審查丁類工作場所，應填具申請書（如格式四），並檢附施工安全評估人員及其所僱之專任工程人員、相關執業技師或開業建築師之簽章文件，及下列資料各( )份︰\n一、施工計畫書。\n二、施工安全評估報告書。", "answers": ["3"], "points": 1, "sourceRow": 0}, {"id": 17, "chapter": "第五章 丁類工作場所之審查", "article": "第 19 條", "context": [], "question": "第十七條之審查，檢查機構認有必要時，得前往該工作場所實施檢查。\n第十七條審查之結果，檢查機構應於受理申請後( )日內，以書面通知事業單位。但可歸責於事業單位者，不在此限。", "answers": ["30"], "points": 1, "sourceRow": 0}];
+    const QUESTIONS = [{"id": 1, "chapter": "第一章 總則", "article": "第 2 條", "context": ["本法第二十六條第一項規定之危險性工作場所分類如下："], "question": "三、丙類：指蒸汽鍋爐之傳熱面積在( )平方公尺以上，或高壓氣體類壓力容器一日之冷凍能力在( )公噸以上或處理能力符合下列規定之一者：\n（一）( )立方公尺以上之氧氣、有毒性及可燃性高壓氣體。\n（二）( )立方公尺以上之前款以外之高壓氣體。", "answers": ["500", "150", "1000", "5000"], "points": 4, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 2, "chapter": "第一章 總則", "article": "第 2 條", "context": ["本法第二十六條第一項規定之危險性工作場所分類如下：", "四、丁類：指下列之營造工程："], "question": "（一）建築物高度在( )公尺以上之建築工程。\n（二）單跨橋梁之橋墩跨距在( )公尺以上或多跨橋梁之橋墩跨距在( )公尺以上之橋梁工程。\n（三）採用壓氣施工作業之工程。", "answers": ["80", "75", "50"], "points": 3, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 3, "chapter": "第一章 總則", "article": "第 2 條", "context": ["本法第二十六條第一項規定之危險性工作場所分類如下：", "四、丁類：指下列之營造工程："], "question": "（四）長度( )公尺以上或需開挖( )公尺以上豎坑之隧道工程。\n（五）開挖深度達( )公尺以上，且開挖面積達( )平方公尺之工程。", "answers": ["1000", "15", "18", "500"], "points": 4, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 4, "chapter": "第一章 總則", "article": "第 2 條", "context": ["本法第二十六條第一項規定之危險性工作場所分類如下：", "四、丁類：指下列之營造工程："], "question": "（六）工程中模板支撐高度( )公尺以上，且面積達( )平方公尺以上者。\n五、其他經中央主管機關指定公告者。", "answers": ["7", "330"], "points": 2, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 5, "chapter": "第一章 總則", "article": "第 3 條", "context": ["本辦法用詞，定義如下："], "question": "二、液化石油氣：指混合( )個碳及( )個碳之碳氫化合物為主要成分之碳氫化合物。", "answers": ["3", "4"], "points": 2, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 6, "chapter": "第一章 總則", "article": "第 4 條", "context": [], "question": "事業單位應於甲類工作場所、丁類工作場所使勞工作業( )日前，向當地勞動檢查機構（以下簡稱檢查機構）申請審查。\n事業單位應於乙類工作場所、丙類工作場所使勞工作業( )日前，向檢查機構申請審查及檢查。", "answers": ["30", "45"], "points": 2, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 7, "chapter": "第二章 甲類工作場所之審查及檢查", "article": "第 5 條", "context": [], "question": "事業單位向檢查機構申請審查甲類工作場所，應填具申請書（如格式一），並檢附下列資料各( )份：\n一、安全衛生管理基本資料，如附件一。\n二、製程安全評估定期實施辦法第四條所定附表一至附表十四。", "answers": ["3"], "points": 1, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 8, "chapter": "第二章 甲類工作場所之審查及檢查", "article": "第 7 條", "context": [], "question": "檢查機構對第五條之申請，應依其檢附之資料實施審查，並得就該工作場所之職業安全衛生設施及管理實施檢查。\n審查之結果，檢查機構應於受理申請後( )日內，以書面通知事業單位。但可歸責於事業單位者，不在此限。", "answers": ["30"], "points": 1, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 9, "chapter": "第二章 甲類工作場所之審查及檢查", "article": "第 8 條", "context": [], "question": "事業單位對經檢查機構審查合格之工作場所，應於製程修改時或至少每( )年重新評估第五條檢附之資料，為必要之更新及記錄，並報請檢查機構備查。", "answers": ["5"], "points": 1, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 10, "chapter": "第三章 乙類工作場所之審查及檢查", "article": "第 9 條", "context": [], "question": "事業單位向檢查機構申請審查及檢查乙類工作場所，應填具申請書（如格式二），並檢附下列資料各( )份：\n一、安全衛生管理基本資料。\n二、製程安全評估報告書。\n三、製程修改安全計畫。\n四、緊急應變計畫。\n五、稽核管理計畫。", "answers": ["3"], "points": 1, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 11, "chapter": "第三章 乙類工作場所之審查及檢查", "article": "第 11 條", "context": ["檢查機構對第九條之申請，應依同條檢附之資料，實施審查。", "檢查機構於審查後，應對下列設施實施檢查：一、火災爆炸危害預防設施。二、有害物洩漏及中毒危害預防設施。"], "question": "審查及檢查之結果，檢查機構應於受理申請後( )日內，以書面通知事業單位。但可歸責於事業單位者，不在此限。", "answers": ["45"], "points": 1, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 12, "chapter": "第三章 乙類工作場所之審查及檢查", "article": "第 12 條", "context": [], "question": "事業單位對經檢查機構審查及檢查合格之工作場所，應於製程修改時或至少每( )年依第九條檢附之資料重新評估一次，為必要之更新並記錄之。", "answers": ["5"], "points": 1, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 13, "chapter": "第四章 丙類工作場所之審查及檢查", "article": "第 13 條", "context": [], "question": "事業單位向檢查機構申請審查及檢查丙類工作場所，應填具申請書（如格式三），並檢附第九條各款規定之應審查資料各( )份。", "answers": ["3"], "points": 1, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 14, "chapter": "第四章 丙類工作場所之審查及檢查", "article": "第 15 條", "context": ["檢查機構對第十三條之申請，應依同條檢附之資料，實施審查。", "檢查機構於審查後，應對下列設施實施檢查：一般高壓氣體、液化石油氣、冷凍用高壓氣體、加氣站製造設施及鍋爐設施。"], "question": "審查及檢查之結果，檢查機構應於受理申請後( )日內，以書面通知事業單位。但可歸責於事業單位者，不在此限。", "answers": ["45"], "points": 1, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 15, "chapter": "第四章 丙類工作場所之審查及檢查", "article": "第 16 條", "context": [], "question": "事業單位對經檢查機構審查及檢查合格之工作場所，應於製程修改時或至少每( )年依第十三條檢附之資料重新評估一次，為必要之更新並記錄之。", "answers": ["5"], "points": 1, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 16, "chapter": "第五章 丁類工作場所之審查", "article": "第 17 條", "context": [], "question": "事業單位向檢查機構申請審查丁類工作場所，應填具申請書（如格式四），並檢附施工安全評估人員及其所僱之專任工程人員、相關執業技師或開業建築師之簽章文件，及下列資料各( )份︰\n一、施工計畫書。\n二、施工安全評估報告書。", "answers": ["3"], "points": 1, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 17, "chapter": "第五章 丁類工作場所之審查", "article": "第 19 條", "context": [], "question": "第十七條之審查，檢查機構認有必要時，得前往該工作場所實施檢查。\n第十七條審查之結果，檢查機構應於受理申請後( )日內，以書面通知事業單位。但可歸責於事業單位者，不在此限。", "answers": ["30"], "points": 1, "sourceRow": 0, "law": "危險性工作場所審查及檢查辦法"}, {"id": 18, "law": "製程安全評估定期實施辦法", "chapter": "製程安全評估定期實施辦法", "article": "第 4 條", "context": [], "question": "第二條之工作場所，事業單位應每( )年就下列事項，實施製程安全評估：\n一、製程安全資訊，如附表一。\n二、製程危害控制措施，如附表二。", "answers": ["5"], "points": 1, "sourceRow": 0}, {"id": 19, "law": "製程安全評估定期實施辦法", "chapter": "製程安全評估定期實施辦法", "article": "第 5 條", "context": [], "question": "前條所定製程安全評估，應使用下列( )種以上之安全評估方法，以評估及確認製程危害：\n一、如果-結果分析。\n二、檢核表。\n三、如果-結果分析／檢核表。\n四、危害及可操作性分析。\n五、失誤模式及影響分析。\n六、故障樹分析。\n七、其他經中央主管機關認可具有同等功能之安全評估方法。", "answers": ["1"], "points": 1, "sourceRow": 0}, {"id": 20, "law": "製程安全評估定期實施辦法", "chapter": "製程安全評估定期實施辦法", "article": "第 6 條", "context": [], "question": "第四條所定每( )年應實施製程安全評估，其期間分別依下列各款所定之日起算：\n一、依本辦法規定完成製程安全評估，並報經勞動檢查機構備查之日。\n二、於本辦法施行前，依危險性工作場所審查及檢查辦法審查合格，取得審查合格之日。\n三、於本辦法施行前，依危險性工作場所審查及檢查辦法規定，完成製程安全重新評估之日。", "answers": ["5"], "points": 1, "sourceRow": 0}, {"id": 21, "law": "製程安全評估定期實施辦法", "chapter": "製程安全評估定期實施辦法", "article": "第 8 條", "context": [], "question": "事業單位應於第六條所定製程安全評估之( )年期間屆滿日之( )日前，或製程修改日之( )日前，填具製程安全評估報備書，如附表十五，並檢附製程安全評估報告，報請勞動檢查機構備查；評估過程相關資料得留存事業單位備查。\n前項報告，應登錄於中央主管機關指定之資訊網站。", "answers": ["5", "30", "30"], "points": 3, "sourceRow": 0}, {"id": 23, "law": "勞動檢查法施行細則", "chapter": "勞動檢查法施行細則", "article": "附表一 備註", "context": [], "question": "事業單位內有二以上從事製造、處置、使用危險物之工作場所時，其危險物之數量，應以各該場所間距在( )公尺以內者合併計算。\n前項間距，係指連接各該工作場所中心點之工作場所內緣之距離。", "answers": ["500"], "points": 1, "sourceRow": 0}];
     const STORAGE_KEY = "dwp-fill-exam-v1";
     let state = loadState();
     let activeIds = QUESTIONS.map(q => q.id);
@@ -444,7 +510,7 @@
       return todayIso() > CONFIG.expiryDate;
     }
 
-    const APP_VERSION = "2026.11.05";
+    const APP_VERSION = "2026.11.06-12";
     document.getElementById("verLine").textContent = `版本 ${APP_VERSION}｜使用期限 ${CONFIG.expiryDate}`;
 
     function boot() {
@@ -496,9 +562,13 @@
       document.getElementById("showBtn").onclick = showAnswers;
       document.getElementById("resetBtn").onclick = resetAll;
       const chapSel = document.getElementById("chapter");
-      [...new Set(QUESTIONS.map(q => q.chapter))].forEach(c => {
-        const n = QUESTIONS.filter(q => q.chapter === c).length;
-        chapSel.add(new Option(`${c}（${n} 題）`, c));
+      [...new Set(QUESTIONS.map(q => q.law || ""))].forEach(law => {
+        const grp = document.createElement("optgroup"); grp.label = law || "全部";
+        [...new Set(QUESTIONS.filter(q => (q.law || "") === law).map(q => q.chapter))].forEach(c => {
+          const n = QUESTIONS.filter(q => q.chapter === c).length;
+          grp.appendChild(new Option(`${c}（${n} 題）`, c));
+        });
+        chapSel.appendChild(grp);
       });
       chapSel.onchange = () => { current = 0; rebuildActiveIds(); render(); document.getElementById("searchClear").click(); };
       const sIn = document.getElementById("search"), sClr = document.getElementById("searchClear"), sNote = document.getElementById("searchNote");
@@ -571,7 +641,7 @@
       document.getElementById("slotCount").textContent = `${q.answers.length} 個填空`;
       document.getElementById("sourceRow").textContent = q.sourceRow ? `原 Excel 第 ${q.sourceRow} 列` : "";
       const escT = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-      document.getElementById("qHead").innerHTML = `<span>${escT(q.chapter)}</span><span class="art">${escT(q.article)}</span>`;
+      document.getElementById("qHead").innerHTML = (q.law && q.law !== q.chapter ? `<span style="background:#e7ecf5;color:#2f4a7a">${escT(q.law)}</span>` : "") + `<span>${escT(q.chapter)}</span><span class="art">${escT(q.article)}</span>`;
       document.getElementById("qCtx").innerHTML = (q.context || []).map(t => `<p>${escT(t).replace(/[（(]\s*[)）]/g, "（　　）")}</p>`).join("");
       document.getElementById("question").innerHTML = formatBlanks(q.question);
       const saved = state.answers[q.id] || [];
@@ -728,6 +798,167 @@
         if (!document.activeElement || !document.activeElement.matches("input")) document.body.classList.remove("typing");
       }, 50);
     });
+
+    // ===== 連連看、排序 =====
+    const ALT = {"match": [{"id": "c1", "kind": "classify", "law": "危險性工作場所審查及檢查辦法", "article": "第 2、4 條", "title": "危險性工作場所適用範圍種類及執行期限", "hint": "判斷各工作場所屬於哪一類，以及應於使勞工作業前幾日申請。", "fields": [{"name": "種類", "options": ["不列管", "甲類", "乙類", "丙類", "丁類"]}, {"name": "申請期限", "options": ["不列管", "30日", "35日", "40日", "45日"]}], "items": [{"text": "單跨橋梁之橋墩跨距在 100 公尺以上之橋梁工程", "ans": ["丁類", "30日"]}, {"text": "工程中模板支撐高度 7 公尺以上，且面積達 100 平方公尺者", "ans": ["不列管", "不列管"]}, {"text": "從事以化學物質製造爆炸性物品之火藥類製造工作場所", "ans": ["乙類", "45日"]}, {"text": "開挖深度達 18 公尺以上，且開挖面積達 330 平方公尺之工程", "ans": ["不列管", "不列管"]}, {"text": "高壓氣體類壓力容器一日之冷凍能力在 100 公噸", "ans": ["不列管", "不列管"]}]}, {"id": "c2", "kind": "classify", "law": "危險性工作場所審查及檢查辦法", "article": "第 4 條", "title": "申請期限及申請類別", "hint": "選出各類工作場所的申請期限及申請類別。", "fields": [{"name": "申請期限", "options": ["作業30日前", "作業45日前"]}, {"name": "申請類別", "options": ["審查", "審查及檢查"]}], "items": [{"text": "甲類工作場所", "ans": ["作業30日前", "審查"]}, {"text": "乙類工作場所", "ans": ["作業45日前", "審查及檢查"]}, {"text": "丙類工作場所", "ans": ["作業45日前", "審查及檢查"]}, {"text": "丁類工作場所", "ans": ["作業30日前", "審查"]}]}, {"id": "c3", "kind": "classify", "law": "危險性工作場所審查及檢查辦法", "article": "第 2、4 條", "title": "危險性工作場所連接執行期限", "hint": "判斷各工作場所應於使勞工作業前幾日申請（不屬危險性工作場所者選不列管）。", "fields": [{"name": "執行期限", "options": ["30日", "35日", "40日", "45日", "不列管"]}], "items": [{"text": "石油產品之裂解反應，以製造石化基本原料之工作場所", "ans": ["30日"]}, {"text": "模板支撐高度 7 公尺以上，且面積達 300 平方公尺以下者", "ans": ["不列管"]}, {"text": "從事以化學物質製造爆炸性物品之火藥類製造工作場所", "ans": ["45日"]}, {"text": "開挖深度 18 公尺以上，且開挖面積 500 平方公尺之工程", "ans": ["30日"]}, {"text": "高壓氣體類壓力容器一日之冷凍能力在 150 公噸以上", "ans": ["45日"]}]}, {"id": "m1", "law": "危險性工作場所審查及檢查辦法", "article": "第 2 條", "title": "危險性工作場所分類與內容", "hint": "將左邊的分類，配對到右邊屬於該類的工作場所。", "pairs": [["甲類", "從事石油產品之裂解反應，以製造石化基本原料之工作場所"], ["乙類", "使用異氰酸甲酯、氯化氫、氨、甲醛、過氧化氫或吡啶從事農藥原體合成之工作場所"], ["丙類", "蒸汽鍋爐之傳熱面積在五百平方公尺以上之工作場所"], ["丁類", "建築物高度在八十公尺以上之建築工程"]]}, {"id": "m4", "law": "危險性工作場所審查及檢查辦法", "article": "第 7、11、15、19 條", "title": "分類與審查後之檢查", "hint": "檢查機構審查後，對各類工作場所的檢查規定為何？", "pairs": [["甲類", "審查後得就職業安全衛生設施及管理實施檢查"], ["乙類", "應檢查火災爆炸及有害物洩漏、中毒危害預防設施"], ["丙類", "應檢查高壓氣體、液化石油氣、加氣站製造設施及鍋爐設施"], ["丁類", "檢查機構認有必要時，得前往工作場所實施檢查"]]}, {"id": "m5", "law": "危險性工作場所審查及檢查辦法", "article": "第 2 條", "title": "丁類營造工程規模門檻", "hint": "將丁類營造工程項目配對到其規模門檻。", "pairs": [["建築物高度", "80 公尺以上"], ["單跨橋梁之橋墩跨距", "75 公尺以上"], ["多跨橋梁之橋墩跨距", "50 公尺以上"], ["隧道工程長度", "1,000 公尺以上"], ["開挖深度（且開挖面積達 500 平方公尺）", "18 公尺以上"], ["模板支撐高度（且面積達 330 平方公尺）", "7 公尺以上"]]}, {"id": "m7", "law": "製程安全評估定期實施辦法", "article": "第 5 條", "title": "安全評估方法與常用英文名稱", "hint": "將評估方法配對到常用的英文名稱或縮寫。", "pairs": [["如果-結果分析", "What-If"], ["檢核表", "Checklist"], ["危害及可操作性分析", "HAZOP"], ["失誤模式及影響分析", "FMEA"], ["故障樹分析", "FTA"]]}, {"id": "q1", "kind": "multi", "law": "危險性工作場所審查及檢查辦法", "article": "第 2、5、18 條", "title": "配合題（一）", "hint": "每題可能有多個正確答案，請選出全部正確的選項。", "items": [{"text": "下列何者屬丁類危險性工作場所？", "options": ["建築物高度在 80 公尺以上之建築工程", "模板支撐高度在 5 公尺以上之工程", "橋墩中心與橋墩中心距離在 50 公尺以上之多跨距橋梁工程", "長度 500 公尺未有豎坑之隧道工程"], "ans": [0, 2]}, {"text": "申請審查甲類危險性工作場所時，應檢附哪些資料？", "options": ["施工計畫書", "製程安全評估報告書", "緊急應變計畫", "安全衛生管理基本資料"], "ans": [1, 3]}, {"text": "申請審查丁類工作場所前，應由下列哪些人員組成評估小組？", "options": ["工作場所負責人", "專任工程人員", "職業安全衛生人員", "熟悉該場所作業之顧問"], "ans": [0, 1, 2]}]}, {"id": "q2", "kind": "multi", "law": "危險性工作場所審查及檢查辦法", "article": "第 4、11、17 條", "title": "配合題（二）", "hint": "每題可能有多個正確答案，請選出全部正確的選項。", "items": [{"text": "丁類危險性工作場所之施工安全評估報告書內容，除包含施工災害初步分析表、特有災害評估表、施工計畫之修改外，尚須包括哪些？", "options": ["報告簽章", "製程修改安全計畫", "基本事項檢討評估表", "製程安全評估表"], "ans": [0, 2]}, {"text": "乙類危險性工作場所於審查後，勞動檢查機構應實施檢查之設施為何？", "options": ["火災爆炸危害預防設施", "墜落危害預防設施", "人員感電預防措施", "有害物洩漏及中毒危害預防設施"], "ans": [0, 3]}, {"text": "依危險性工作場所審查及檢查辦法規定，下列哪些工作場所之雇主應於使勞工作業 45 日前，向當地勞動檢查機構申請審查及檢查？", "options": ["甲類", "乙類", "丙類", "丁類"], "ans": [1, 2]}]}], "order": [{"id": "o1", "law": "危險性工作場所審查及檢查辦法", "article": "第 4～8 條", "title": "甲類工作場所審查流程", "hint": "依先後順序排列。", "steps": ["事前組成評估小組實施評估", "於使勞工作業 30 日前，填具申請書（格式一）並檢附資料各三份申請審查", "檢查機構依檢附資料實施審查，並得實施檢查", "檢查機構於受理申請後 30 日內以書面通知", "製程修改時或至少每 5 年重新評估，並報請檢查機構備查"]}, {"id": "o2", "law": "危險性工作場所審查及檢查辦法", "article": "第 4、9～12 條", "title": "乙類工作場所審查及檢查流程", "hint": "依先後順序排列。", "steps": ["事前組成評估小組實施評估", "於使勞工作業 45 日前，填具申請書（格式二）並檢附資料各三份申請", "檢查機構依檢附資料實施審查", "審查後檢查火災爆炸、有害物洩漏及中毒危害預防設施", "檢查機構於受理申請後 45 日內以書面通知", "製程修改時或至少每 5 年重新評估一次並記錄"]}, {"id": "o3", "law": "危險性工作場所審查及檢查辦法", "article": "第 4、17～20 條", "title": "丁類工作場所審查流程", "hint": "依先後順序排列。", "steps": ["事前組成評估小組實施評估", "於使勞工作業 30 日前，檢附施工計畫書、施工安全評估報告書及簽章文件申請審查", "檢查機構審查，認有必要時前往工作場所實施檢查", "檢查機構於受理申請後 30 日內以書面通知", "施工中變更主要分項工程施工方法時，重新評估並更新計畫書及評估報告書"]}, {"id": "o4", "law": "製程安全評估定期實施辦法", "article": "第 4、6、8 條", "title": "製程安全評估報備流程", "hint": "依先後順序排列。", "steps": ["依本辦法規定完成製程安全評估，並報經勞動檢查機構備查之日起，每 5 年實施製程安全評估", "於 5 年期間屆滿日之 30 日前（或製程修改日之 30 日前）填具製程安全評估報備書", "檢附製程安全評估報告，報請勞動檢查機構備查", "將報告登錄於中央主管機關指定之資訊網站"]}, {"id": "o6", "law": "製程安全評估定期實施辦法", "article": "第 4 條附表", "title": "製程安全評估報告內容項目", "hint": "將製程安全評估報告內容項目依序排列。", "steps": ["製程安全資訊", "製程危害控制措施", "教育訓練", "承攬管理", "啟動前安全檢查", "機械完整性", "動火許可", "商業機密"]}, {"id": "o7", "law": "危險性工作場所審查及檢查辦法", "article": "第 17 條附件十五", "title": "施工安全評估報告書內容項目", "hint": "將附件十五施工安全評估報告書的內容項目依序排列。", "steps": ["初步危害分析表", "主要作業程序分析表", "施工災害初步分析表", "基本事項檢討評估表", "特有災害評估表", "施工計畫書之修改", "報告簽章"]}]};
+    const ALT_KEY = "dwp-alt-v1";
+    let altType = "fill", altIdx = { match:0, order:0 }, altState = {}, altSel = null, altDone = false;
+    let altScores = {};
+    try { altScores = JSON.parse(localStorage.getItem(ALT_KEY)) || {}; } catch {}
+    const altSave = () => { try { localStorage.setItem(ALT_KEY, JSON.stringify(altScores)); } catch {} };
+    const shuffleArr = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+    const escA = t => String(t).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+    const COLORS = ["#126c67","#c06a00","#2f4a7a","#8e3b8a","#b03a2e","#4a7a2f"];
+    function curSet(){ return ALT[altType][altIdx[altType]]; }
+    function newState(){
+      const set = curSet(); altDone = false; altSel = null;
+      if (altType === "match" && set.kind === "classify") { altState = { pick: set.items.map(() => set.fields.map(() => null)) }; return; }
+      if (altType === "match" && set.kind === "multi") { altState = { sel: set.items.map(() => []) }; return; }
+      if (altType === "match") {
+        let right = shuffleArr(set.pairs.map((p, i) => i));
+        if (right.every((r, i) => r === i)) right = right.slice(1).concat(right[0]);
+        altState = { right, link: {} };          // link: 左邊序號 -> 右邊原序號
+      } else {
+        let ord = shuffleArr(set.steps.map((s, i) => i));
+        if (ord.every((r, i) => r === i)) ord = ord.slice(1).concat(ord[0]);
+        altState = { ord };
+      }
+    }
+    function renderAlt(){
+      const set = curSet(), list = ALT[altType];
+      document.getElementById("altCounter").textContent = `第 ${altIdx[altType] + 1} / ${list.length} 組`;
+      const sc = altScores[set.id];
+      document.getElementById("altArt").textContent = sc ? `上次 ${sc.ok}/${sc.total}` : "";
+      document.getElementById("altHead").innerHTML = `<span style="background:#e7ecf5;color:#2f4a7a">${escA(set.law)}</span><span class="art">${escA(set.article)}</span>`;
+      document.getElementById("altTitle").textContent = set.title;
+      document.getElementById("altHint").textContent = set.kind === "multi" ? set.hint : set.kind === "classify" ? set.hint + "每一題點選對應的選項。" : altType === "match" ? set.hint + "先點左邊一項，再點右邊對應的一項；點已配對的項目可取消。" : set.hint + "用 ▲▼ 調整順序。";
+      document.getElementById("altPrev").disabled = altIdx[altType] === 0;
+      document.getElementById("altNext").disabled = altIdx[altType] === list.length - 1;
+      const body = document.getElementById("altBody");
+      if (altType === "match" && set.kind === "multi") {
+        const sameSet = (a, b) => a.length === b.length && a.every(x => b.includes(x));
+        body.innerHTML = `<div class="olist">${set.items.map((it, i) => {
+          const ok = sameSet(altState.sel[i], it.ans);
+          return `<div class="cl${altDone ? (ok ? " ok" : " bad") : ""}"><div class="cl-t"><b>${i + 1}.</b> ${escA(it.text)}</div>
+            <div class="mopts">${it.options.map((o, k) => {
+              const on = altState.sel[i].includes(k), right = it.ans.includes(k);
+              const mark = altDone ? (right ? (on ? " ✓" : " ← 正確答案") : (on ? " ✗" : "")) : "";
+              return `<button type="button" class="mopt${on ? " on" : ""}${altDone && right ? " right" : ""}${altDone && on && !right ? " wrong" : ""}" data-mi="${i}" data-mk="${k}">(${k + 1}) ${escA(o)}<b>${mark}</b></button>`;
+            }).join("")}</div>${altDone ? `<span class="fix" style="color:${ok ? "#23794a" : "#b3261e"}">答案：${it.ans.map(k => "(" + (k + 1) + ")").join("")}</span>` : ""}</div>`;
+        }).join("")}</div>`;
+        return;
+      }
+      if (altType === "match" && set.kind === "classify") {
+        body.innerHTML = `<div class="olist">${set.items.map((it, i) => {
+          const allOk = set.fields.every((f, k) => altState.pick[i][k] === it.ans[k]);
+          const cls = "cl" + (altDone ? (allOk ? " ok" : " bad") : "");
+          return `<div class="${cls}"><div class="cl-t"><b>(${i + 1})</b> ${escA(it.text)}</div>${set.fields.map((f, k) => {
+            const fix = altDone && altState.pick[i][k] !== it.ans[k] ? `<span class="fix">正確：${escA(it.ans[k])}</span>` : "";
+            return `<div class="cl-f"><span class="cl-n">${escA(f.name)}</span><span class="cl-o">${f.options.map(o =>
+              `<button type="button" class="chip${altState.pick[i][k] === o ? " on" : ""}" data-ci="${i}" data-ck="${k}" data-cv="${escA(o)}">${escA(o)}</button>`).join("")}</span>${fix}</div>`;
+          }).join("")}</div>`;
+        }).join("")}</div>`;
+        return;
+      }
+      if (altType === "match") {
+        const rightOf = {}; Object.entries(altState.link).forEach(([l, r]) => rightOf[r] = +l);
+        const left = set.pairs.map((p, i) => {
+          const r = altState.link[i], col = r !== undefined ? COLORS[i % COLORS.length] : "";
+          let cls = "mi" + (altSel === i ? " sel" : ""), fix = "";
+          if (altDone) { cls += r === i ? " ok" : " bad"; if (r !== i) fix = `<span class="fix">正確：${escA(set.pairs[i][1])}</span>`; }
+          return `<button type="button" class="${cls}" data-l="${i}"><span class="tag" style="${col ? `background:${col};color:#fff` : ""}">${String.fromCharCode(65 + i)}</span>${escA(p[0])}${fix}</button>`;
+        }).join("");
+        const right = altState.right.map(ri => {
+          const l = rightOf[ri], col = l !== undefined ? COLORS[l % COLORS.length] : "";
+          return `<button type="button" class="mi" data-r="${ri}"><span class="tag" style="${col ? `background:${col};color:#fff` : ""}">${l !== undefined ? String.fromCharCode(65 + l) : "?"}</span>${escA(set.pairs[ri][1])}</button>`;
+        }).join("");
+        body.innerHTML = `<div class="mgrid"><div class="mcol">${left}</div><div class="mcol">${right}</div></div>`;
+      } else {
+        body.innerHTML = `<ol class="olist">${altState.ord.map((si, pos) => {
+          let cls = "oi", fix = "";
+          if (altDone) { cls += si === pos ? " ok" : " bad"; if (si !== pos) fix = `<span class="fix">應排第 ${si + 1}</span>`; }
+          return `<li class="${cls}"><span class="n">${pos + 1}</span><span>${escA(set.steps[si])}${fix}</span>
+            <span class="mv"><button type="button" data-up="${pos}" ${pos === 0 || altDone ? "disabled" : ""} aria-label="上移">▲</button><button type="button" data-down="${pos}" ${pos === altState.ord.length - 1 || altDone ? "disabled" : ""} aria-label="下移">▼</button></span></li>`;
+        }).join("")}</ol>`;
+      }
+    }
+    document.getElementById("altBody").addEventListener("click", e => {
+      if (altDone) return;
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.mi !== undefined) {
+        const a = altState.sel[+b.dataset.mi], k = +b.dataset.mk, j = a.indexOf(k);
+        if (j >= 0) a.splice(j, 1); else a.push(k);
+        renderAlt(); return;
+      }
+      if (b.dataset.ci !== undefined) { altState.pick[+b.dataset.ci][+b.dataset.ck] = b.dataset.cv; renderAlt(); return; }
+      if (altType === "match") {
+        if (b.dataset.l !== undefined) {
+          const l = +b.dataset.l;
+          if (altState.link[l] !== undefined && altSel !== l) { delete altState.link[l]; altSel = null; }
+          else altSel = altSel === l ? null : l;
+        } else if (b.dataset.r !== undefined) {
+          const r = +b.dataset.r;
+          const owner = Object.keys(altState.link).find(k => altState.link[k] === r);
+          if (altSel === null) { if (owner !== undefined) delete altState.link[owner]; }
+          else { if (owner !== undefined) delete altState.link[owner]; altState.link[altSel] = r; altSel = null; }
+        }
+      } else {
+        const o = altState.ord;
+        if (b.dataset.up !== undefined) { const i = +b.dataset.up; [o[i - 1], o[i]] = [o[i], o[i - 1]]; }
+        if (b.dataset.down !== undefined) { const i = +b.dataset.down; [o[i + 1], o[i]] = [o[i], o[i + 1]]; }
+      }
+      renderAlt();
+    });
+    function altFb(text, cls){ const f = document.getElementById("altFb"); f.textContent = text; f.className = "alt-fb" + (cls ? " " + cls : ""); }
+    document.getElementById("altGrade").onclick = () => {
+      const set = curSet();
+      if (set.kind === "multi") {
+        const empty = altState.sel.filter(a => !a.length).length;
+        if (empty) { altFb(`還有 ${empty} 題沒有作答。`); return; }
+        altDone = true;
+        const ok = set.items.filter((it, i) => altState.sel[i].length === it.ans.length && it.ans.every(k => altState.sel[i].includes(k))).length;
+        altScores[set.id] = { ok, total: set.items.length }; altSave();
+        altFb(ok === set.items.length ? `全對！${ok} / ${set.items.length} 題` : `答對 ${ok} / ${set.items.length} 題，正確答案已標示。`, ok === set.items.length ? "good" : "bad");
+        renderAlt(); return;
+      }
+      if (set.kind === "classify") {
+        const miss = altState.pick.flat().filter(v => v === null).length;
+        if (miss) { altFb(`還有 ${miss} 個選項沒有選。`); return; }
+        altDone = true;
+        const total = set.items.length * set.fields.length;
+        const ok = set.items.reduce((n, it, i) => n + it.ans.filter((a, k) => altState.pick[i][k] === a).length, 0);
+        altScores[set.id] = { ok, total }; altSave();
+        altFb(ok === total ? `全對！${ok} / ${total}` : `答對 ${ok} / ${total}，錯誤處已標示正確答案。`, ok === total ? "good" : "bad");
+        renderAlt(); return;
+      }
+      if (altType === "match" && Object.keys(altState.link).length < set.pairs.length) { altFb(`還有 ${set.pairs.length - Object.keys(altState.link).length} 項沒有配對。`); return; }
+      altDone = true;
+      const total = altType === "match" ? set.pairs.length : set.steps.length;
+      const ok = altType === "match" ? set.pairs.filter((p, i) => altState.link[i] === i).length : altState.ord.filter((s, i) => s === i).length;
+      altScores[set.id] = { ok, total }; altSave();
+      altFb(ok === total ? `全對！${ok} / ${total}` : `答對 ${ok} / ${total}，錯誤處已標示正確答案。`, ok === total ? "good" : "bad");
+      renderAlt();
+    };
+    document.getElementById("altShow").onclick = () => {
+      const set = curSet();
+      if (set.kind === "multi") { altState.sel = set.items.map(it => it.ans.slice()); altDone = true; altFb("已顯示正確答案，按「重來」可重新作答。"); renderAlt(); return; }
+      if (set.kind === "classify") { altState.pick = set.items.map(it => it.ans.slice()); altDone = true; altFb("已顯示正確答案，按「重來」可重新作答。"); renderAlt(); return; }
+      if (altType === "match") { altState.link = {}; set.pairs.forEach((p, i) => altState.link[i] = i); }
+      else altState.ord = set.steps.map((s, i) => i);
+      altDone = true; altFb("已顯示正確答案，按「重來」可重新作答。"); renderAlt();
+    };
+    document.getElementById("altReset").onclick = () => { newState(); altFb("作答後按「判分」。"); renderAlt(); };
+    document.getElementById("altPrev").onclick = () => { altIdx[altType]--; newState(); altFb("作答後按「判分」。"); renderAlt(); window.scrollTo(0, 0); };
+    document.getElementById("altNext").onclick = () => { altIdx[altType]++; newState(); altFb("作答後按「判分」。"); renderAlt(); window.scrollTo(0, 0); };
+    document.querySelector(".types").addEventListener("click", e => {
+      const b = e.target.closest("button[data-type]"); if (!b) return;
+      altType = b.dataset.type;
+      document.querySelectorAll(".types button").forEach(x => x.setAttribute("aria-pressed", x === b));
+      document.body.classList.toggle("alt", altType !== "fill");
+      if (altType !== "fill") { newState(); altFb("作答後按「判分」。"); renderAlt(); }
+      window.scrollTo(0, 0);
+    });
+
 
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("./service-worker.js", { updateViaCache: "none" }).catch(() => {});

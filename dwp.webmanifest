@@ -1,0 +1,33 @@
+{
+  "name": "危險性工作場所安衛測驗",
+  "short_name": "危險性工作場所安衛測驗",
+  "description": "危險性工作場所審查及檢查辦法、製程安全評估定期實施辦法：填充、連連看、排序",
+  "lang": "zh-Hant",
+  "id": "./dwp.html",
+  "start_url": "./dwp.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f8fb",
+  "theme_color": "#e8730c",
+  "icons": [
+    {
+      "src": "dwp-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "dwp-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "dwp-icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
